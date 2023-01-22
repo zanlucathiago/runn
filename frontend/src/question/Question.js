@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, MenuItem, Typography } from '@mui/material';
 import DsCard from '../components/DsCard';
 import DsCol from '../components/DsCol';
 import DsFilledTextField from '../components/DsFilledTextField';
@@ -6,10 +6,10 @@ import DsRow from '../components/DsRow';
 import DsSelect from '../components/DsSelect';
 import DsStandardTextField from '../components/DsStandardTextField';
 import { QUESTION_TYPE, TYPES } from '../constants/contants';
-import TypeCategory from './typeCategory/TypeCategory';
 
 export default function Question({
   description,
+  model,
   onChange,
   onClick,
   selected,
@@ -17,7 +17,7 @@ export default function Question({
   type,
 }) {
   return (
-    <DsCard onClick={onClick}>
+    <DsCard onClick={!selected && onClick}>
       {type === QUESTION_TYPE.QUESTION.value ? (
         selected ? (
           <DsRow>
@@ -29,9 +29,21 @@ export default function Question({
               />
             </DsCol>
             <DsCol size={6}>
-              <DsSelect>
-                {TYPES.map((_category, index) => (
-                  <TypeCategory index={index} />
+              <DsSelect onChange={onChange('model')} value={model}>
+                {TYPES.reduce(
+                  (acc, cur, outerIndex) => [
+                    ...acc,
+                    ...cur.map((type, innerIndex) => ({
+                      ...type,
+                      outerIndex,
+                      innerIndex,
+                    })),
+                  ],
+                  []
+                ).map(({ innerIndex, outerIndex }) => (
+                  <MenuItem value={TYPES[outerIndex][innerIndex].value}>
+                    {TYPES[outerIndex][innerIndex].description}
+                  </MenuItem>
                 ))}
               </DsSelect>
             </DsCol>

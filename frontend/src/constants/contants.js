@@ -1,36 +1,36 @@
 export const SPACING = 2;
 
+export const MODELS = {
+  SHORT_ANSWER: {
+    value: 'SHORT_ANSWER',
+    description: 'Resposta curta',
+  },
+  PARAGRAPH: {
+    value: 'PARAGRAPH',
+    description: 'Parágrafo',
+  },
+  MULTIPLE_CHOICE: {
+    value: 'MULTIPLE_CHOICE',
+    description: 'Múltipla escolha',
+  },
+  CHECKBOXES: {
+    value: 'CHECKBOXES',
+    description: 'Caixas de seleção',
+  },
+  DROPDOWN: {
+    value: 'DROPDOWN',
+    description: 'Lista suspensa',
+  },
+  DATE: {
+    value: 'DATE',
+    description: 'Data',
+  },
+};
+
 export const TYPES = [
-  [
-    {
-      value: 'SHORT_ANSWER',
-      description: 'Resposta curta',
-    },
-    {
-      value: 'PARAGRAPH',
-      description: 'Parágrafo',
-    },
-  ],
-  [
-    {
-      value: 'MULTIPLE_CHOICE',
-      description: 'Múltipla escolha',
-    },
-    {
-      value: 'CHECKBOXES',
-      description: 'Caixas de seleção',
-    },
-    {
-      value: 'DROPDOWN',
-      description: 'Lista suspensa',
-    },
-  ],
-  [
-    {
-      value: 'DATE',
-      description: 'Data',
-    },
-  ],
+  [MODELS.SHORT_ANSWER, MODELS.PARAGRAPH],
+  [MODELS.MULTIPLE_CHOICE, MODELS.CHECKBOXES, MODELS.DROPDOWN],
+  [MODELS.DATE],
 ];
 
 export const QUESTION_TYPE = {

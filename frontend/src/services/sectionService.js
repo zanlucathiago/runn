@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { QUESTION_TYPE } from '../constants/contants';
+import { MODELS, QUESTION_TYPE } from '../constants/contants';
 
 export const handleChangeQuestion =
   (sections, setSections) =>
@@ -50,6 +50,7 @@ export const getNewQuestion = (type) => ({
   anchorEl: null,
   description: '',
   id: uuidv4(),
+  model: MODELS.MULTIPLE_CHOICE.value,
   title: QUESTION_TYPE[type].defaultValue,
   type,
 });

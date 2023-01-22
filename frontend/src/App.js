@@ -99,6 +99,7 @@ function App() {
             <Question
               description={question.description}
               key={question.id}
+              model={question.model}
               onChange={onChangeQuestion(sectionIndex, questionIndex)}
               onClick={handleClick(sectionIndex, questionIndex)}
               selected={
