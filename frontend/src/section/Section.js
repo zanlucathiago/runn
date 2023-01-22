@@ -1,7 +1,7 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import DsBox from '../components/DsBox';
 import DsCard from '../components/DsCard';
+import DsDeleteIconButton from '../components/DsDeleteIconButton';
 import DsStandardTextField from '../components/DsStandardTextField';
 
 export default function Section({
@@ -54,11 +54,7 @@ export default function Section({
               {displayTitle}
             </Typography>
           )}
-          {length > 1 && (
-            <IconButton onClick={onDelete}>
-              <DeleteIcon />
-            </IconButton>
-          )}
+          {length > 1 && <DsDeleteIconButton onClick={onDelete} />}
         </Stack>
         {selected ? (
           <DsStandardTextField

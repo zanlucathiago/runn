@@ -4,6 +4,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Box, IconButton, Paper, Popper } from '@mui/material';
 import DsColumnStack from '../components/DsColumnStack';
 import { QUESTION_TYPE } from '../constants/contants';
+import DsTooltip from '../components/DsTooltip';
 
 export default function MainMenu({ anchorEl, onAddQuestion, onAddSection }) {
   return (
@@ -11,17 +12,25 @@ export default function MainMenu({ anchorEl, onAddQuestion, onAddSection }) {
       <Box sx={{ pl: 2 }}>
         <Paper>
           <DsColumnStack>
-            <IconButton onClick={onAddQuestion(QUESTION_TYPE.QUESTION.value)}>
-              <AddCircleOutlineIcon />
-            </IconButton>
-            <IconButton
-              onClick={onAddQuestion(QUESTION_TYPE.TITLE_AND_DESCRIPTION.value)}
-            >
-              <TextFieldsIcon />
-            </IconButton>
-            <IconButton onClick={onAddSection}>
-              <ViewAgendaOutlinedIcon />
-            </IconButton>
+            <DsTooltip title="Adicionar pergunta">
+              <IconButton onClick={onAddQuestion(QUESTION_TYPE.QUESTION.value)}>
+                <AddCircleOutlineIcon />
+              </IconButton>
+            </DsTooltip>
+            <DsTooltip title="Adicionar título e descrição">
+              <IconButton
+                onClick={onAddQuestion(
+                  QUESTION_TYPE.TITLE_AND_DESCRIPTION.value
+                )}
+              >
+                <TextFieldsIcon />
+              </IconButton>
+            </DsTooltip>
+            <DsTooltip title="Adicionar seção">
+              <IconButton onClick={onAddSection}>
+                <ViewAgendaOutlinedIcon />
+              </IconButton>
+            </DsTooltip>
           </DsColumnStack>
         </Paper>
       </Box>

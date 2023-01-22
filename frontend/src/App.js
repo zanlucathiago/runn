@@ -5,8 +5,10 @@ import MainMenu from './menu/MainMenu';
 import Question from './question/Question';
 import Section from './section/Section';
 import {
+  getAnchorElement,
   handleAddQuestion,
   handleChangeQuestion,
+  handleClickDelete,
 } from './services/sectionService';
 
 const getNewSection = () => ({
@@ -64,6 +66,8 @@ function App() {
     });
   };
 
+  const onClickDelete = handleClickDelete(setSelected, setSections, sections);
+
   const handleDelete = (sectionIndex) => (event) => {
     event.stopPropagation();
 
@@ -77,6 +81,8 @@ function App() {
     });
     setSections(sections.filter((_section, index) => index !== sectionIndex));
   };
+
+  const anchorEl = getAnchorElement(sections, selected);
 
   return (
     <DsContainer>
@@ -102,6 +108,7 @@ function App() {
               model={question.model}
               onChange={onChangeQuestion(sectionIndex, questionIndex)}
               onClick={handleClick(sectionIndex, questionIndex)}
+              onClickDelete={onClickDelete(sectionIndex, questionIndex)}
               selected={
                 sectionIndex === selected.sectionIndex &&
                 questionIndex === selected.questionIndex
@@ -113,12 +120,7 @@ function App() {
         </Section>
       ))}
       <MainMenu
-        anchorEl={
-          sections[selected.sectionIndex] && selected.questionIndex === -1
-            ? sections[selected.sectionIndex].anchorEl
-            : sections[selected.sectionIndex].questions[selected.questionIndex]
-                .anchorEl
-        }
+        anchorEl={anchorEl}
         onAddQuestion={onAddQuestion}
         onAddSection={handleAddSection}
       />

@@ -54,3 +54,31 @@ export const getNewQuestion = (type) => ({
   title: QUESTION_TYPE[type].defaultValue,
   type,
 });
+
+export const getAnchorElement = (sections, selected) =>
+  sections[selected.sectionIndex] && selected.questionIndex === -1
+    ? sections[selected.sectionIndex].anchorEl
+    : sections[selected.sectionIndex].questions[selected.questionIndex]
+        .anchorEl;
+
+export const handleClickDelete =
+  (setSelected, setSections, sections) =>
+  (sectionIndex, questionIndex) =>
+  () => {
+    setSelected({
+      sectionIndex,
+      questionIndex: questionIndex - 1,
+    });
+    setSections(
+      sections.map((section, sIndex) =>
+        sIndex === sectionIndex
+          ? {
+              ...section,
+              questions: section.questions.filter(
+                (_question, qIndex) => qIndex !== questionIndex
+              ),
+            }
+          : section
+      )
+    );
+  };

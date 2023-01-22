@@ -1,23 +1,25 @@
-import { Box, MenuItem, Typography } from '@mui/material';
+import { Box, MenuItem, Stack, Typography } from '@mui/material';
 import DsCard from '../components/DsCard';
 import DsCol from '../components/DsCol';
+import DsDeleteIconButton from '../components/DsDeleteIconButton';
 import DsFilledTextField from '../components/DsFilledTextField';
 import DsRow from '../components/DsRow';
 import DsSelect from '../components/DsSelect';
 import DsStandardTextField from '../components/DsStandardTextField';
-import { QUESTION_TYPE, TYPES } from '../constants/contants';
+import { QUESTION_TYPE, SPACING, TYPES } from '../constants/contants';
 
 export default function Question({
   description,
   model,
   onChange,
   onClick,
+  onClickDelete,
   selected,
   title,
   type,
 }) {
   return (
-    <DsCard onClick={!selected && onClick}>
+    <DsCard {...(selected ? {} : { onClick })}>
       {type === QUESTION_TYPE.QUESTION.value ? (
         selected ? (
           <DsRow>
@@ -49,15 +51,23 @@ export default function Question({
             </DsCol>
           </DsRow>
         ) : (
-          <Typography>{title}</Typography>
+          <Typography>{description || 'Pergunta'}</Typography>
         )
       ) : selected ? (
         [
-          <DsFilledTextField
-            onChange={onChange('title')}
-            placeholder="Título"
-            value={title}
-          />,
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            spacing={SPACING}
+          >
+            <DsFilledTextField
+              onChange={onChange('title')}
+              placeholder="Título"
+              value={title}
+            />
+            <DsDeleteIconButton onClick={onClickDelete} />
+          </Stack>,
           <DsStandardTextField
             onChange={onChange('description')}
             placeholder="Descrição (opcional)"
