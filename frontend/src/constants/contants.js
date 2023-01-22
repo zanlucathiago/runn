@@ -32,3 +32,11 @@ export const TYPES = [
     },
   ],
 ];
+
+export const QUESTION_TYPE = {
+  TITLE_AND_DESCRIPTION: {
+    defaultValue: 'Sem título',
+    value: 'TITLE_AND_DESCRIPTION',
+  },
+  QUESTION: { defaultValue: '', value: 'QUESTION' },
+};

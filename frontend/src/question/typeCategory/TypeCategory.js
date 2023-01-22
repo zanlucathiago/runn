@@ -1,5 +1,5 @@
 import { Divider, MenuItem } from '@mui/material';
-import { TYPES } from '../../contants';
+import { TYPES } from '../../constants/contants';
 
 export default function TypeCategory({ index }) {
   return [

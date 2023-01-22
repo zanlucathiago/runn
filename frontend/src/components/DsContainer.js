@@ -1,6 +1,4 @@
-import { Box, Container, Stack } from '@mui/material';
-import { blueGrey, grey } from '@mui/material/colors';
-import { SPACING } from '../contants';
+import { Container } from '@mui/material';
 import DsBox from './DsBox';
 import DsStack from './DsStack';
 

@@ -4,7 +4,10 @@ import DsContainer from './components/DsContainer';
 import MainMenu from './menu/MainMenu';
 import Question from './question/Question';
 import Section from './section/Section';
-import { handleAddQuestion, handleChangeQuestion } from './services/sectionService';
+import {
+  handleAddQuestion,
+  handleChangeQuestion,
+} from './services/sectionService';
 
 const getNewSection = () => ({
   anchorEl: null,
@@ -103,6 +106,7 @@ function App() {
                 questionIndex === selected.questionIndex
               }
               title={question.title}
+              type={question.type}
             />
           ))}
         </Section>
