@@ -1,12 +1,12 @@
-import { Card, CardActionArea, Stack } from '@mui/material';
+import { Card, CardActionArea } from '@mui/material';
 import { useState } from 'react';
 import DsBox from './DsBox';
 import DsStack from './DsStack';
 
-export default function DsCard({ children, onClick, autoFocus }) {
+export default function DsCard({ children, onClick }) {
   const [cardRef, setCardRef] = useState(false);
   const setRef = (ref) => {
-    if (autoFocus && !cardRef && ref) {
+    if (!cardRef && ref) {
       setCardRef(true);
       onClick({ currentTarget: ref });
     }

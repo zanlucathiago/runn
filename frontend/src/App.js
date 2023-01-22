@@ -4,18 +4,13 @@ import DsContainer from './components/DsContainer';
 import MainMenu from './menu/MainMenu';
 import Question from './question/Question';
 import Section from './section/Section';
-import { handleChangeQuestion } from './services/sectionService';
-
-const getNewQuestion = () => ({
-  description: '',
-  title: '',
-});
+import { handleAddQuestion, handleChangeQuestion } from './services/sectionService';
 
 const getNewSection = () => ({
   anchorEl: null,
   description: '',
   id: uuidv4(),
-  questions: [getNewQuestion(), getNewQuestion()],
+  questions: [],
   title: '',
 });
 
@@ -27,25 +22,7 @@ function App() {
     questionIndex: -1,
   });
 
-  const handleAddQuestion = () => {
-    setSections(
-      sections.map((section, sectionIndex) =>
-        sectionIndex === selected.sectionIndex
-          ? {
-              ...section,
-              questions: [
-                ...section.questions.slice(0, selected.questionIndex + 1),
-                getNewQuestion(),
-                ...section.questions.slice(
-                  selected.questionIndex + 1,
-                  section.questions.length
-                ),
-              ],
-            }
-          : section
-      )
-    );
-  };
+  const onAddQuestion = handleAddQuestion(sections, setSections, selected);
 
   const handleAddSection = () => {
     setSections([
@@ -71,7 +48,13 @@ function App() {
   const onChangeQuestion = handleChangeQuestion(sections, setSections);
 
   const handleClick = (sectionIndex, questionIndex) => (event) => {
-    updateSectionProperty('anchorEl', sectionIndex, event.currentTarget);
+    if (questionIndex === -1) {
+      updateSectionProperty('anchorEl', sectionIndex, event.currentTarget);
+    } else {
+      onChangeQuestion(sectionIndex, questionIndex)('anchorEl')({
+        target: { value: event.currentTarget },
+      });
+    }
     setSelected({
       sectionIndex,
       questionIndex,
@@ -79,11 +62,11 @@ function App() {
   };
 
   const handleDelete = (sectionIndex) => (event) => {
-    event.preventDefault();
     event.stopPropagation();
 
     setSelected({
       sectionIndex:
+        sectionIndex === selected.sectionIndex &&
         sectionIndex + 1 === sections.length
           ? selected.sectionIndex - 1
           : selected.sectionIndex,
@@ -112,6 +95,7 @@ function App() {
           {questions.map((question, questionIndex) => (
             <Question
               description={question.description}
+              key={question.id}
               onChange={onChangeQuestion(sectionIndex, questionIndex)}
               onClick={handleClick(sectionIndex, questionIndex)}
               selected={
@@ -125,10 +109,12 @@ function App() {
       ))}
       <MainMenu
         anchorEl={
-          sections[selected.sectionIndex] &&
-          sections[selected.sectionIndex].anchorEl
+          sections[selected.sectionIndex] && selected.questionIndex === -1
+            ? sections[selected.sectionIndex].anchorEl
+            : sections[selected.sectionIndex].questions[selected.questionIndex]
+                .anchorEl
         }
-        onAddQuestion={handleAddQuestion}
+        onAddQuestion={onAddQuestion}
         onAddSection={handleAddSection}
       />
     </DsContainer>

@@ -37,7 +37,7 @@ export default function Section({
           </Typography>
         </DsBox>
       )}
-      <DsCard onClick={onClick} autoFocus>
+      <DsCard onClick={onClick}>
         <Stack
           direction="row"
           justifyContent="space-between"

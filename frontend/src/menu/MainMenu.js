@@ -1,24 +1,25 @@
 import ViewAgendaOutlinedIcon from '@mui/icons-material/ViewAgendaOutlined';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Box, IconButton, Paper, Popper, Stack } from '@mui/material';
+import { Box, IconButton, Paper, Popper } from '@mui/material';
+import DsColumnStack from '../components/DsColumnStack';
 
 export default function MainMenu({ anchorEl, onAddQuestion, onAddSection }) {
   return (
     <Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="right">
       <Box sx={{ pl: 2 }}>
         <Paper>
-          <Stack direction="column">
+          <DsColumnStack>
             <IconButton>
               <AddCircleOutlineIcon />
             </IconButton>
-            <IconButton>
-              <TextFieldsIcon onClick={onAddQuestion} />
+            <IconButton onClick={onAddQuestion}>
+              <TextFieldsIcon />
             </IconButton>
             <IconButton onClick={onAddSection}>
               <ViewAgendaOutlinedIcon />
             </IconButton>
-          </Stack>
+          </DsColumnStack>
         </Paper>
       </Box>
     </Popper>
