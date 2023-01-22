@@ -3,7 +3,7 @@ import TextFieldsIcon from '@mui/icons-material/TextFields';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Box, IconButton, Paper, Popper, Stack } from '@mui/material';
 
-export default function MainMenu({ anchorEl, onAddSection }) {
+export default function MainMenu({ anchorEl, onAddQuestion, onAddSection }) {
   return (
     <Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="right">
       <Box sx={{ pl: 2 }}>
@@ -13,7 +13,7 @@ export default function MainMenu({ anchorEl, onAddSection }) {
               <AddCircleOutlineIcon />
             </IconButton>
             <IconButton>
-              <TextFieldsIcon />
+              <TextFieldsIcon onClick={onAddQuestion} />
             </IconButton>
             <IconButton onClick={onAddSection}>
               <ViewAgendaOutlinedIcon />

@@ -4,12 +4,18 @@ import DsContainer from './components/DsContainer';
 import MainMenu from './menu/MainMenu';
 import Question from './question/Question';
 import Section from './section/Section';
+import { handleChangeQuestion } from './services/sectionService';
+
+const getNewQuestion = () => ({
+  description: '',
+  title: '',
+});
 
 const getNewSection = () => ({
   anchorEl: null,
   description: '',
   id: uuidv4(),
-  questions: [{}, {}],
+  questions: [getNewQuestion(), getNewQuestion()],
   title: '',
 });
 
@@ -20,6 +26,26 @@ function App() {
     sectionIndex: 0,
     questionIndex: -1,
   });
+
+  const handleAddQuestion = () => {
+    setSections(
+      sections.map((section, sectionIndex) =>
+        sectionIndex === selected.sectionIndex
+          ? {
+              ...section,
+              questions: [
+                ...section.questions.slice(0, selected.questionIndex + 1),
+                getNewQuestion(),
+                ...section.questions.slice(
+                  selected.questionIndex + 1,
+                  section.questions.length
+                ),
+              ],
+            }
+          : section
+      )
+    );
+  };
 
   const handleAddSection = () => {
     setSections([
@@ -41,6 +67,8 @@ function App() {
   const handleChange = (sectionIndex) => (prop) => (event) => {
     updateSectionProperty(prop, sectionIndex, event.target.value);
   };
+
+  const onChangeQuestion = handleChangeQuestion(sections, setSections);
 
   const handleClick = (sectionIndex, questionIndex) => (event) => {
     updateSectionProperty('anchorEl', sectionIndex, event.currentTarget);
@@ -83,11 +111,14 @@ function App() {
         >
           {questions.map((question, questionIndex) => (
             <Question
+              description={question.description}
+              onChange={onChangeQuestion(sectionIndex, questionIndex)}
               onClick={handleClick(sectionIndex, questionIndex)}
               selected={
                 sectionIndex === selected.sectionIndex &&
                 questionIndex === selected.questionIndex
               }
+              title={question.title}
             />
           ))}
         </Section>
@@ -97,6 +128,7 @@ function App() {
           sections[selected.sectionIndex] &&
           sections[selected.sectionIndex].anchorEl
         }
+        onAddQuestion={handleAddQuestion}
         onAddSection={handleAddSection}
       />
     </DsContainer>

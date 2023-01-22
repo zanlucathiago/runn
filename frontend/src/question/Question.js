@@ -7,24 +7,34 @@ import DsSelect from '../components/DsSelect';
 import { TYPES } from '../contants';
 import TypeCategory from './typeCategory/TypeCategory';
 
-export default function Question({ onClick, question, selected }) {
+export default function Question({
+  description,
+  onChange,
+  onClick,
+  selected,
+  title,
+}) {
   return (
     <DsCard onClick={onClick}>
       {selected ? (
         <DsRow>
           <DsCol size={6}>
-            <DsFilledTextField placeholder="Pergunta" />
+            <DsFilledTextField
+              onChange={onChange('title')}
+              placeholder="Pergunta"
+              value={title}
+            />
           </DsCol>
           <DsCol size={6}>
             <DsSelect>
-              {TYPES.map((category, index) => (
+              {TYPES.map((_category, index) => (
                 <TypeCategory index={index} />
               ))}
             </DsSelect>
           </DsCol>
         </DsRow>
       ) : (
-        <Typography>asdasdasd</Typography>
+        <Typography>{title}</Typography>
       )}
     </DsCard>
   );
