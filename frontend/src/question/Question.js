@@ -1,4 +1,3 @@
-// import { Divider, MenuItem } from '@mui/material';
 import { Typography } from '@mui/material';
 import DsCard from '../components/DsCard';
 import DsCol from '../components/DsCol';
@@ -6,7 +5,7 @@ import DsFilledTextField from '../components/DsFilledTextField';
 import DsRow from '../components/DsRow';
 import DsSelect from '../components/DsSelect';
 import { TYPES } from '../contants';
-import TypeCategory from './TypeCategory';
+import TypeCategory from './typeCategory/TypeCategory';
 
 export default function Question({ onClick, question, selected }) {
   return (

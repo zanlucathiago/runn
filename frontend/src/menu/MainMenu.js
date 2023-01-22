@@ -5,7 +5,7 @@ import { Box, IconButton, Paper, Popper, Stack } from '@mui/material';
 
 export default function MainMenu({ anchorEl, onAddSection }) {
   return (
-    <Popper open={!!anchorEl} anchorEl={anchorEl} placement="right">
+    <Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="right">
       <Box sx={{ pl: 2 }}>
         <Paper>
           <Stack direction="column">
