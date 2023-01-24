@@ -16,6 +16,21 @@ const getForm = async (req, res) => {
   res.status(200).json(sections);
 };
 
+// @desc    Get forms
+// @route   GET /api/forms
+// @access  Private
+const getFormList = async (req, res) => {
+  const forms = await Form.find().populate('sections');
+  res.status(200).json(
+    forms.map((form) => ({
+      _id: form._id,
+      title: form.sections[0].title,
+      createdAt: form.createdAt.toLocaleDateString('pt-BR'),
+      updatedAt: form.updatedAt.toLocaleDateString('pt-BR'),
+    }))
+  );
+};
+
 // @desc    Set form
 // @route   POST /api/forms
 // @access  Private
@@ -72,6 +87,7 @@ const deleteForm = async (req, res) => {};
 
 module.exports = {
   getForm,
+  getFormList,
   createForm,
   saveForm,
   deleteForm,

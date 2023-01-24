@@ -24,9 +24,12 @@ const saveForm = (formData, id) => () =>
 const getForm = (id) =>
   axios.get(`${API_URL}${id}`).then((response) => response.data);
 
+const getFormList = () => axios.get(API_URL).then((response) => response.data);
+
 const formService = {
   createForm,
   getForm,
+  getFormList,
   saveForm,
 };
 
