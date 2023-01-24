@@ -10,6 +10,7 @@ import {
   handleChangeQuestion,
   handleClickDelete,
 } from './services/sectionService';
+import formService from './features/formService';
 
 const getNewSection = () => ({
   anchorEl: null,
@@ -36,6 +37,8 @@ function App() {
       ...sections.slice(selected.sectionIndex + 1, sections.length),
     ]);
   };
+
+  const onClickSave = formService.createForm(sections);
 
   const updateSectionProperty = (prop, sectionIndex, value) => {
     setSections(
@@ -85,7 +88,7 @@ function App() {
   const anchorEl = getAnchorElement(sections, selected);
 
   return (
-    <DsContainer>
+    <DsContainer onClick={onClickSave}>
       {sections.map(({ description, id, questions, title }, sectionIndex) => (
         <Section
           description={description}

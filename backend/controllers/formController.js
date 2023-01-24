@@ -1,6 +1,8 @@
 // const asyncHandler = require('express-async-handler')
 
 const Form = require('../models/formModel');
+const Section = require('../models/sectionModel');
+const Question = require('../models/questionModel');
 // const User = require('../models/userModel')
 
 // @desc    Get forms
@@ -15,16 +17,23 @@ const getForms = async (req, res) => {
 // @route   POST /api/forms
 // @access  Private
 const setForm = async (req, res) => {
-  // if (!req.body.text) {
-  //   res.status(400)
-  //   throw new Error('Please add a text field')
-  // }
-
-  const form = await Form.create({
-    text: req.body.text,
-    user: req.user.id,
-  });
-
+  const form = new Form({ user: 'Thiago' });
+  await form.save();
+  for (const section of req.body) {
+    const sectionModel = new Section({
+      title: section.title,
+      description: section.description,
+      form,
+    });
+    await sectionModel.save();
+    for (const question of section.questions) {
+      const questionModel = new Question({
+        ...question,
+        section: sectionModel,
+      });
+      await questionModel.save();
+    }
+  }
   res.status(200).json(form);
 };
 
