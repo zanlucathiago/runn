@@ -17,7 +17,7 @@ import { useParams } from 'react-router-dom';
 
 function FormEdit() {
   const { id } = useParams();
-  const [sections, setSections] = useState([getNewSection()]);
+  const [sections, setSections] = useState([]);
   const [selected, setSelected] = useState({
     sectionIndex: 0,
     questionIndex: -1,

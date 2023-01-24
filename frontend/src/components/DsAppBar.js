@@ -6,15 +6,11 @@ export default function DsAppBar({ onClick, text }) {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar color="primary" position="static">
         <Toolbar>
-          <Link
-            color="#FFF"
-            href="/"
-            underline="none"
-            variant="h6"
-            sx={{ flexGrow: 1 }}
-          >
-            Runn Form
-          </Link>
+          <Box sx={{ flexGrow: 1 }}>
+            <Link color="#FFF" href="/" underline="none" variant="h6">
+              Runn Form
+            </Link>
+          </Box>
           <DsLoadingButton onClick={onClick}>{text}</DsLoadingButton>
         </Toolbar>
       </AppBar>

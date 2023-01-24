@@ -1,16 +1,16 @@
-import { Box, CircularProgress } from '@mui/material';
+import { CircularProgress, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 export default function DsCircularProgress({ action, children }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     action().then(() => setLoading(false));
   }, []);
 
   return loading ? (
-    <Box sx={{ display: 'flex' }}>
+    <Stack alignItems="center">
       <CircularProgress />
-    </Box>
+    </Stack>
   ) : (
     children
   );
