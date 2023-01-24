@@ -82,3 +82,11 @@ export const handleClickDelete =
       )
     );
   };
+
+export const getNewSection = () => ({
+  anchorEl: null,
+  description: '',
+  id: uuidv4(),
+  questions: [],
+  title: '',
+});

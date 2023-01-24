@@ -1,12 +1,15 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useState } from 'react';
 
-export default function DsLoadingButton({ onClick }) {
+export default function DsLoadingButton({ children, onClick }) {
   const [loading, setLoading] = useState(false);
 
   const onClickSave = () => {
     setLoading(true);
-    onClick().then(() => setLoading(false));
+    onClick().then((data) => {
+      setLoading(false);
+      return data;
+    });
   };
 
   return (
@@ -16,7 +19,7 @@ export default function DsLoadingButton({ onClick }) {
       onClick={onClickSave}
       variant="contained"
     >
-      Salvar
+      {children}
     </LoadingButton>
   );
 }

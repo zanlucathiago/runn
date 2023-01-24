@@ -5,6 +5,10 @@ const formSchema = mongoose.Schema(
     user: {
       type: String,
     },
+    sections: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Section',
+    }]
   },
   {
     timestamps: true,

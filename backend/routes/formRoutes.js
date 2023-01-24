@@ -1,15 +1,13 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const {
-  getForms,
-  setForm,
-  updateForm,
+  getForm,
+  createForm,
+  saveForm,
   deleteForm,
-} = require('../controllers/formController')
+} = require('../controllers/formController');
 
-const { protect } = require('../middleware/authMiddleware')
+router.route('/').post(createForm);
+router.route('/:id').get(getForm).delete(deleteForm).put(saveForm);
 
-router.route('/').get(protect, getForms).post(protect, setForm)
-router.route('/:id').delete(protect, deleteForm).put(protect, updateForm)
-
-module.exports = router
+module.exports = router;

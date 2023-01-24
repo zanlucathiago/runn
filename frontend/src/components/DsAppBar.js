@@ -1,6 +1,7 @@
 import { AppBar, Box, Link, Toolbar } from '@mui/material';
+import DsLoadingButton from './DsLoadingButton';
 
-export default function DsAppBar({ children }) {
+export default function DsAppBar({ onClick, text }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar color="primary" position="static">
@@ -14,7 +15,7 @@ export default function DsAppBar({ children }) {
           >
             Runn Form
           </Link>
-          {children}
+          <DsLoadingButton onClick={onClick}>{text}</DsLoadingButton>
         </Toolbar>
       </AppBar>
     </Box>

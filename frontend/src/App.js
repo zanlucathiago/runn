@@ -7,7 +7,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<FormList />} />
-        <Route path="/edit" element={<FormEdit />} />
+        <Route path="/edit/:id" element={<FormEdit />} />
       </Routes>
     </Router>
   );
