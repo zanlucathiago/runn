@@ -1,13 +1,19 @@
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Link, Toolbar } from '@mui/material';
 
 export default function DsAppBar({ children }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar color="primary" position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Link
+            color="#FFF"
+            href="/"
+            underline="none"
+            variant="h6"
+            sx={{ flexGrow: 1 }}
+          >
             Runn Form
-          </Typography>
+          </Link>
           {children}
         </Toolbar>
       </AppBar>

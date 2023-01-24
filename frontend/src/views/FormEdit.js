@@ -30,6 +30,10 @@ function FormEdit() {
     questionIndex: -1,
   });
 
+  const isSelected = (sectionIndex, questionIndex) =>
+    sectionIndex === selected.sectionIndex &&
+    selected.questionIndex === questionIndex;
+
   const onAddQuestion = handleAddQuestion(sections, setSections, selected);
 
   const handleAddSection = () => {
@@ -89,51 +93,47 @@ function FormEdit() {
 
   const anchorEl = getAnchorElement(sections, selected);
 
-  return [
-    <DsAppBar>
-      <DsLoadingButton onClick={onClickSave} />
-    </DsAppBar>,
-    <DsContainer>
-      {sections.map(({ description, id, questions, title }, sectionIndex) => (
-        <Section
-          description={description}
-          key={id}
-          length={sections.length}
-          index={sectionIndex}
-          onChange={handleChange(sectionIndex)}
-          onClick={handleClick(sectionIndex, -1)}
-          onDelete={handleDelete(sectionIndex)}
-          selected={
-            sectionIndex === selected.sectionIndex &&
-            selected.questionIndex === -1
-          }
-          title={title}
-        >
-          {questions.map((question, questionIndex) => (
-            <Question
-              description={question.description}
-              key={question.id}
-              model={question.model}
-              onChange={onChangeQuestion(sectionIndex, questionIndex)}
-              onClick={handleClick(sectionIndex, questionIndex)}
-              onClickDelete={onClickDelete(sectionIndex, questionIndex)}
-              selected={
-                sectionIndex === selected.sectionIndex &&
-                questionIndex === selected.questionIndex
-              }
-              title={question.title}
-              type={question.type}
-            />
-          ))}
-        </Section>
-      ))}
-    </DsContainer>,
-    <MainMenu
-      anchorEl={anchorEl}
-      onAddQuestion={onAddQuestion}
-      onAddSection={handleAddSection}
-    />,
-  ];
+  return (
+    <>
+      <DsAppBar>
+        <DsLoadingButton onClick={onClickSave} />
+      </DsAppBar>
+      <DsContainer>
+        {sections.map(({ description, id, questions, title }, sectionIndex) => (
+          <Section
+            description={description}
+            key={id}
+            length={sections.length}
+            index={sectionIndex}
+            onChange={handleChange(sectionIndex)}
+            onClick={handleClick(sectionIndex, -1)}
+            onDelete={handleDelete(sectionIndex)}
+            selected={isSelected(sectionIndex, -1)}
+            title={title}
+          >
+            {questions.map((question, questionIndex) => (
+              <Question
+                description={question.description}
+                key={question.id}
+                model={question.model}
+                onChange={onChangeQuestion(sectionIndex, questionIndex)}
+                onClick={handleClick(sectionIndex, questionIndex)}
+                onClickDelete={onClickDelete(sectionIndex, questionIndex)}
+                selected={isSelected(sectionIndex, questionIndex)}
+                title={question.title}
+                type={question.type}
+              />
+            ))}
+          </Section>
+        ))}
+      </DsContainer>
+      <MainMenu
+        anchorEl={anchorEl}
+        onAddQuestion={onAddQuestion}
+        onAddSection={handleAddSection}
+      />
+    </>
+  );
 }
 
 export default FormEdit;
