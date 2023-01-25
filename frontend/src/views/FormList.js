@@ -17,7 +17,7 @@ export default function FormList() {
   const [formList, setFormList] = useState([]);
   const getFormList = () => formService.getFormList().then(setFormList);
   const navigate = useNavigate();
-  const editForm = (id) => navigate(`/edit/${id}`);
+  const editForm = (id) => navigate(`/d/${id}/edit`);
   const onClickRow = (id) => () => editForm(id);
   const createForm = () => formService.createForm().then(editForm);
   return (

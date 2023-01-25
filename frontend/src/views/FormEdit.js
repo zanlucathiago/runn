@@ -1,3 +1,4 @@
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import { useState } from 'react';
 import DsContainer from '../components/DsContainer';
 import MainMenu from '../menu/MainMenu';
@@ -14,6 +15,7 @@ import formService from '../features/formService';
 import DsAppBar from '../components/DsAppBar';
 import DsCircularProgress from '../components/DsCircularProgress';
 import { useParams } from 'react-router-dom';
+import { IconButton } from '@mui/material';
 
 function FormEdit() {
   const { id } = useParams();
@@ -82,7 +84,11 @@ function FormEdit() {
 
   return (
     <>
-      <DsAppBar onClick={onClickSave} text="Salvar" />
+      <DsAppBar onClick={onClickSave} text="Salvar">
+        <IconButton color="#FFF" href={`/d/e/${id}/view`}>
+          <RemoveRedEyeOutlinedIcon />
+        </IconButton>
+      </DsAppBar>
       <DsContainer>
         <DsCircularProgress action={getForm}>
           {sections.length

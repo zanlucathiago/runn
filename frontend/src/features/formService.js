@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/forms/';
+const API_URL = '/api/d/';
 
 const createForm = () => axios.post(API_URL).then((response) => response.data);
 

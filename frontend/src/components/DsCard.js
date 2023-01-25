@@ -1,23 +1,16 @@
-import { Card, CardActionArea } from '@mui/material';
-import { useState } from 'react';
+import { Card } from '@mui/material';
 import DsBox from './DsBox';
+import DsCardActionArea from './DsCardActionArea';
 import DsStack from './DsStack';
 
 export default function DsCard({ children, onClick }) {
-  const [cardRef, setCardRef] = useState(false);
-  const setRef = (ref) => {
-    if (!cardRef && ref) {
-      setCardRef(true);
-      onClick({ currentTarget: ref });
-    }
-  };
   return (
     <Card>
-      <CardActionArea disableRipple onClick={onClick} ref={setRef}>
+      <DsCardActionArea onClick={onClick}>
         <DsBox>
           <DsStack>{children}</DsStack>
         </DsBox>
-      </CardActionArea>
+      </DsCardActionArea>
     </Card>
   );
 }

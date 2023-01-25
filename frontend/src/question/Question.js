@@ -23,7 +23,7 @@ export default function Question({
   onChange,
   onClick,
   onClickDelete,
-  selected,
+  selected = false,
   title,
   type,
 }) {

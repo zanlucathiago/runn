@@ -12,7 +12,7 @@ export default function Section({
   onChange,
   onClick,
   onDelete,
-  selected,
+  selected = false,
   title,
 }) {
   const placeholder = index

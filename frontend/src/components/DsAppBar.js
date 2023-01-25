@@ -1,7 +1,8 @@
-import { AppBar, Box, Link, Toolbar } from '@mui/material';
+import { AppBar, Box, Link, Stack, Toolbar } from '@mui/material';
+import { SPACING } from '../constants/contants';
 import DsLoadingButton from './DsLoadingButton';
 
-export default function DsAppBar({ onClick, text }) {
+export default function DsAppBar({ children, onClick, text }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar color="primary" position="static">
@@ -11,7 +12,10 @@ export default function DsAppBar({ onClick, text }) {
               Runn Form
             </Link>
           </Box>
-          <DsLoadingButton onClick={onClick}>{text}</DsLoadingButton>
+          <Stack direction="row" spacing={SPACING}>
+            {children}
+            <DsLoadingButton onClick={onClick}>{text}</DsLoadingButton>
+          </Stack>
         </Toolbar>
       </AppBar>
     </Box>

@@ -1,13 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import FormEdit from './views/FormEdit';
 import FormList from './views/FormList';
+import InstanceCreate from './views/InstanceCreate';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<FormList />} />
-        <Route path="/edit/:id" element={<FormEdit />} />
+        <Route path="/d/:id/edit" element={<FormEdit />} />
+        <Route path="/d/e/:id/view" element={<InstanceCreate />} />
       </Routes>
     </Router>
   );
