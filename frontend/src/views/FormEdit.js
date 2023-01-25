@@ -34,7 +34,7 @@ function FormEdit() {
       ...sections.slice(selected.sectionIndex + 1, sections.length),
     ]);
   };
-  const onClickSave = formService.saveForm(sections);
+  const onClickSave = formService.saveForm(sections, id);
   const updateSectionProperty = (prop, sectionIndex, value) => {
     setSections(
       sections.map((section, index) => ({

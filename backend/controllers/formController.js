@@ -1,14 +1,8 @@
-// const asyncHandler = require('express-async-handler')
-
 const { MODELS, QUESTION_TYPE } = require('../constants/contants');
 const Form = require('../models/formModel');
 const Section = require('../models/sectionModel');
 const Question = require('../models/questionModel');
-// const User = require('../models/userModel')
 
-// @desc    Get forms
-// @route   GET /api/forms
-// @access  Private
 const getForm = async (req, res) => {
   const sections = await Section.find({ form: req.params.id }).populate(
     'questions'
@@ -16,9 +10,6 @@ const getForm = async (req, res) => {
   res.status(200).json(sections);
 };
 
-// @desc    Get forms
-// @route   GET /api/forms
-// @access  Private
 const getFormList = async (req, res) => {
   const forms = await Form.find().populate('sections');
   res.status(200).json(
@@ -31,9 +22,6 @@ const getFormList = async (req, res) => {
   );
 };
 
-// @desc    Set form
-// @route   POST /api/forms
-// @access  Private
 const createForm = async (_req, res) => {
   const form = new Form({ user: 'Thiago' });
   const section = new Section({
@@ -56,33 +44,48 @@ const createForm = async (_req, res) => {
   res.status(200).json(form._id);
 };
 
-// @desc    Update form
-// @route   PUT /api/forms/:id
-// @access  Private
 const saveForm = async (req, res) => {
-  // const form = new Form({ user: 'Thiago' });
-  // await form.save();
-  // for (const section of req.body) {
-  //   const sectionModel = new Section({
-  //     title: section.title,
-  //     description: section.description,
-  //     form,
-  //   });
-  //   await sectionModel.save();
-  //   for (const question of section.questions) {
-  //     const questionModel = new Question({
-  //       ...question,
-  //       section: sectionModel,
-  //     });
-  //     await questionModel.save();
-  //   }
-  // }
-  // res.status(200).json(form);
+  const form = await Form.findById(req.params.id).populate('sections');
+  for (const section of form.sections) {
+    for (const question of section.questions) {
+      await Question.deleteOne({ _id: question._id });
+    }
+    await Section.deleteOne({ _id: section._id });
+  }
+
+  const sections = req.body.map((section) => {
+    const sectionModel = new Section({
+      title: section.title,
+      description: section.description,
+      form,
+    });
+    const questions = section.questions.map(
+      (question) =>
+        new Question({
+          description: question.description,
+          model: question.model,
+          title: question.title,
+          type: question.type,
+          section: sectionModel,
+        })
+    );
+    sectionModel.questions = questions;
+    return {
+      section: sectionModel,
+      questions,
+    };
+  });
+  form.sections = sections.map(({ section }) => section);
+  await form.save();
+  for (const data of sections) {
+    await data.section.save();
+    for (const question of data.questions) {
+      await question.save();
+    }
+  }
+  res.status(200).json(form._id);
 };
 
-// @desc    Delete form
-// @route   DELETE /api/forms/:id
-// @access  Private
 const deleteForm = async (req, res) => {};
 
 module.exports = {

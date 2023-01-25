@@ -6,7 +6,7 @@ const createForm = () => axios.post(API_URL).then((response) => response.data);
 
 const saveForm = (formData, id) => () =>
   axios
-    .post(
+    .put(
       `${API_URL}${id}`,
       formData.map((section) => ({
         description: section.description,
