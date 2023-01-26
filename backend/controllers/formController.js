@@ -2,11 +2,15 @@ const { MODELS, QUESTION_TYPE } = require('../constants/contants');
 const Form = require('../models/formModel');
 const Section = require('../models/sectionModel');
 const Question = require('../models/questionModel');
+const Option = require('../models/optionModel');
 
 const getForm = async (req, res) => {
-  const sections = await Section.find({ form: req.params.id }).populate(
-    'questions'
-  );
+  const sections = await Section.find({ form: req.params.id }).populate({
+    path: 'questions',
+    populate: {
+      path: 'options',
+    },
+  });
   res.status(200).json(sections);
 };
 
@@ -36,18 +40,32 @@ const createForm = async (_req, res) => {
     type: QUESTION_TYPE.QUESTION,
     section,
   });
+  const option = new Option({
+    text: 'Opção 1',
+    question,
+  });
+  question.options = [option];
   section.questions = [question];
   form.sections = [section];
   await form.save();
   await section.save();
   await question.save();
+  await option.save();
   res.status(200).json(form._id);
 };
 
 const saveForm = async (req, res) => {
-  const form = await Form.findById(req.params.id).populate('sections');
+  const form = await Form.findById(req.params.id).populate({
+    path: 'sections',
+    populate: {
+      path: 'questions',
+    },
+  });
   for (const section of form.sections) {
     for (const question of section.questions) {
+      for (const option of question.options) {
+        await Option.deleteOne({ _id: option._id });
+      }
       await Question.deleteOne({ _id: question._id });
     }
     await Section.deleteOne({ _id: section._id });
@@ -59,30 +77,35 @@ const saveForm = async (req, res) => {
       description: section.description,
       form,
     });
-    const questions = section.questions.map(
-      (question) =>
-        new Question({
-          description: question.description,
-          model: question.model,
-          title: question.title,
-          type: question.type,
-          section: sectionModel,
-        })
-    );
+    const questions = section.questions.map((question) => {
+      const questionModel = new Question({
+        description: question.description,
+        model: question.model,
+        other: question.other,
+        title: question.title,
+        type: question.type,
+        section: sectionModel,
+      });
+      const options = question.options.map(
+        (option) => new Option({ text: option.text, question: questionModel })
+      );
+      questionModel.options = options;
+      return questionModel;
+    });
     sectionModel.questions = questions;
-    return {
-      section: sectionModel,
-      questions,
-    };
+    return sectionModel;
   });
-  form.sections = sections.map(({ section }) => section);
-  await form.save();
-  for (const data of sections) {
-    await data.section.save();
-    for (const question of data.questions) {
+  form.sections = sections;
+  for (const section of sections) {
+    for (const question of section.questions) {
+      for (const option of question.options) {
+        await option.save();
+      }
       await question.save();
     }
+    await section.save();
   }
+  await form.save();
   res.status(200).json(form._id);
 };
 

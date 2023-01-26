@@ -5,6 +5,7 @@ import DsCircularProgress from '../components/DsCircularProgress';
 import DsContainer from '../components/DsContainer';
 import formService from '../features/formService';
 import Question from '../question/Question';
+import ResponseInput from '../question/ResponseInput';
 import Section from '../section/Section';
 
 export default function InstanceCreate() {
@@ -20,12 +21,7 @@ export default function InstanceCreate() {
             <Section
               description={section.description}
               key={section.id}
-              // length={sections.length}
               index={sectionIndex}
-              // onChange={handleChange(sectionIndex)}
-              // onClick={handleClick(sectionIndex, -1)}
-              // onDelete={handleDelete(sectionIndex)}
-              // selected={isSelected(sectionIndex, -1)}
               title={section.title}
             >
               {section.questions.map((question) => (
@@ -33,13 +29,11 @@ export default function InstanceCreate() {
                   description={question.description}
                   key={question.id}
                   model={question.model}
-                  // onChange={onChangeQuestion(sectionIndex, questionIndex)}
-                  // onClick={handleClick(sectionIndex, questionIndex)}
-                  // onClickDelete={onClickDelete(sectionIndex, questionIndex)}
-                  // selected={isSelected(sectionIndex, questionIndex)}
                   title={question.title}
                   type={question.type}
-                />
+                >
+                  <ResponseInput model={question.model} />
+                </Question>
               ))}
             </Section>
           ))}

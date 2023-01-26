@@ -13,8 +13,10 @@ const saveForm = (formData, id) => () =>
         questions: section.questions.map((question) => ({
           description: question.description,
           model: question.model,
+          other: question.other,
           title: question.title,
           type: question.type,
+          options: question.options.map((option) => ({ text: option.text })),
         })),
         title: section.title,
       }))

@@ -21,6 +21,15 @@ const questionSchema = mongoose.Schema(
     description: {
       type: String,
     },
+    options: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Option',
+      },
+    ],
+    other: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,

@@ -18,6 +18,7 @@ import { QUESTION_TYPE, SPACING, TYPES } from '../constants/contants';
 import icons from '../icons/icons';
 
 export default function Question({
+  children,
   description,
   model,
   onChange,
@@ -28,10 +29,10 @@ export default function Question({
   type,
 }) {
   return (
-    <DsCard {...(selected ? {} : { onClick })}>
+    <DsCard selected={selected} onClick={onClick}>
       {type === QUESTION_TYPE.QUESTION.value ? (
         selected ? (
-          [
+          <>
             <DsRow>
               <DsCol size={7}>
                 <DsFilledTextField
@@ -70,17 +71,21 @@ export default function Question({
                   })}
                 </DsSelect>
               </DsCol>
-            </DsRow>,
-            <Divider variant="middle" />,
+            </DsRow>
+            {children}
+            <Divider variant="middle" />
             <Stack alignItems="flex-end">
               <DsDeleteIconButton onClick={onClickDelete} />
-            </Stack>,
-          ]
+            </Stack>
+          </>
         ) : (
-          <Typography>{title || 'Pergunta'}</Typography>
+          <>
+            <Typography>{title || 'Pergunta'}</Typography>
+            {children}
+          </>
         )
       ) : selected ? (
-        [
+        <>
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -93,20 +98,22 @@ export default function Question({
               value={title}
             />
             <DsDeleteIconButton onClick={onClickDelete} />
-          </Stack>,
+          </Stack>
           <DsStandardTextField
             onChange={onChange('description')}
             placeholder="Descrição (opcional)"
             value={description}
-          />,
-        ]
+          />
+          {children}
+        </>
       ) : (
-        [
-          <Typography>{title || 'Título'}</Typography>,
+        <>
+          <Typography>{title || 'Título'}</Typography>
           <Box sx={{ color: '#70757a' }}>
             <Typography>{description || 'Descrição (opcional)'}</Typography>
-          </Box>,
-        ]
+          </Box>
+          {children}
+        </>
       )}
     </DsCard>
   );

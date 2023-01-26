@@ -25,6 +25,35 @@ export const handleChangeQuestion =
     );
   };
 
+export const handleChangeOption =
+  (sections, setSections) =>
+  (sectionIndex, questionIndex, optionIndex) =>
+  (event) => {
+    setSections(
+      sections.map((section, sIndex) =>
+        sectionIndex === sIndex
+          ? {
+              ...section,
+              questions: section.questions.map((question, qIndex) =>
+                qIndex === questionIndex
+                  ? {
+                      ...question,
+                      options: question.options.map((option, oIndex) =>
+                        oIndex === optionIndex
+                          ? {
+                              text: event.target.value,
+                            }
+                          : option
+                      ),
+                    }
+                  : question
+              ),
+            }
+          : section
+      )
+    );
+  };
+
 export const handleAddQuestion =
   (sections, setSections, selected) => (type) => () => {
     setSections(
@@ -56,10 +85,11 @@ export const getNewQuestion = (type) => ({
 });
 
 export const getAnchorElement = (sections, selected) =>
-  sections[selected.sectionIndex] && selected.questionIndex === -1
+  sections[selected.sectionIndex] &&
+  (selected.questionIndex === -1
     ? sections[selected.sectionIndex].anchorEl
     : sections[selected.sectionIndex].questions[selected.questionIndex]
-        .anchorEl;
+        .anchorEl);
 
 export const handleClickDelete =
   (setSelected, setSections, sections) =>
