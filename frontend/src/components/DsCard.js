@@ -14,7 +14,7 @@ export default function DsCard({ children, onClick, selected }) {
 
   return (
     <Card ref={first}>
-      <DsCardActionArea onClick={handleClick} selected={selected}>
+      <DsCardActionArea onClick={handleClick} clickable={!selected && onClick}>
         <DsBox>
           <DsStack>{children}</DsStack>
         </DsBox>

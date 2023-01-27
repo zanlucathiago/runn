@@ -132,8 +132,8 @@ function FormEdit() {
   return (
     <>
       <DsAppBar onClick={onClickSave} text="Salvar">
-        <IconButton color="#FFF" href={`/d/e/${id}/view`}>
-          <RemoveRedEyeOutlinedIcon />
+        <IconButton href={`/d/e/${id}/view`}>
+          <RemoveRedEyeOutlinedIcon sx={{ color: '#FFF' }} />
         </IconButton>
       </DsAppBar>
       <DsContainer>

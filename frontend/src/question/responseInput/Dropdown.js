@@ -1,9 +1,12 @@
-import { Select, FormControl } from '@mui/material';
+import { Select, FormControl, MenuItem, Typography } from '@mui/material';
 
 export default function Dropdown({ children, onChange, value }) {
   return (
     <FormControl size="small">
-      <Select value={value} onChange={onChange}>
+      <Select displayEmpty value={value} onChange={onChange}>
+        <MenuItem value="">
+          <Typography color="rgba(0,0,0,.54)">Escolher</Typography>
+        </MenuItem>
         {children}
       </Select>
     </FormControl>
