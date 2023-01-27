@@ -13,9 +13,9 @@ function humanize(str) {
 
 export default function ResponseInput({ children, model, onChange }) {
   const [value, setValue] = useState('');
-  const handleChange = (event) => {
-    setValue(event.target.value);
-    onChange(event.target.value);
+  const handleChange = (value) => {
+    setValue(value);
+    onChange(value);
   };
   const InputComponent = Components[humanize(MODELS[model].value)];
   return (

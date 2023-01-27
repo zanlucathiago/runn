@@ -136,7 +136,7 @@ function FormEdit() {
           <RemoveRedEyeOutlinedIcon sx={{ color: '#FFF' }} />
         </IconButton>
       </DsAppBar>
-      <DsContainer>
+      <DsContainer maxWidth="md">
         <DsCircularProgress action={getForm}>
           {sections.length ? (
             <>

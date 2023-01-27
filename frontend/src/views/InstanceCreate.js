@@ -19,7 +19,7 @@ export default function InstanceCreate() {
   return (
     <>
       <DsAppBar onClick={() => {}} text="Salvar" />
-      <DsContainer>
+      <DsContainer maxWidth="sm">
         <DsCircularProgress action={getForm}>
           {sections.map((section, sectionIndex) => (
             <Section
