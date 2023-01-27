@@ -20,14 +20,14 @@ export default function InstanceCreate() {
           {sections.map((section, sectionIndex) => (
             <Section
               description={section.description}
-              key={section.id}
+              key={sectionIndex}
               index={sectionIndex}
               title={section.title}
             >
-              {section.questions.map((question) => (
+              {section.questions.map((question, questionIndex) => (
                 <Question
                   description={question.description}
-                  key={question.id}
+                  key={questionIndex}
                   model={question.model}
                   title={question.title}
                   type={question.type}

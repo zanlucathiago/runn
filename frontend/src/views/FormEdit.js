@@ -144,7 +144,7 @@ function FormEdit() {
                 ({ description, id, questions, title }, sectionIndex) => (
                   <Section
                     description={description}
-                    key={id}
+                    key={sectionIndex}
                     length={sections.length}
                     index={sectionIndex}
                     onChange={handleChange(sectionIndex)}
@@ -156,7 +156,7 @@ function FormEdit() {
                     {questions.map((question, questionIndex) => (
                       <Question
                         description={question.description}
-                        key={question.id}
+                        key={questionIndex}
                         model={question.model}
                         onChange={onChangeQuestion(sectionIndex, questionIndex)}
                         onClick={handleClick(sectionIndex, questionIndex)}
@@ -182,6 +182,7 @@ function FormEdit() {
                           {question.options.map((option, optionIndex) => (
                             <TemplateOption
                               index={optionIndex}
+                              key={optionIndex}
                               onClick={onClickRemove(optionIndex)}
                               selected={isSelected(sectionIndex, questionIndex)}
                               model={question.model}

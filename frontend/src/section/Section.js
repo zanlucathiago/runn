@@ -22,53 +22,55 @@ export default function Section({
   const displayTitle =
     title || (index ? 'Seção sem título' : 'Formulário sem título');
 
-  return [
-    <div>
-      {length > 1 && (
-        <DsBox
-          width="fit-content"
-          bgcolor="secondary.main"
-          color="white"
-          py={1}
-          borderRadius="11px 11px 0 0"
-        >
-          <Typography variant="body2">
-            Seção {index + 1} de {length}
-          </Typography>
-        </DsBox>
-      )}
-      <DsCard onClick={onClick}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+  return (
+    <>
+      <div>
+        {length > 1 && (
+          <DsBox
+            width="fit-content"
+            bgcolor="secondary.main"
+            color="white"
+            py={1}
+            borderRadius="11px 11px 0 0"
+          >
+            <Typography variant="body2">
+              Seção {index + 1} de {length}
+            </Typography>
+          </DsBox>
+        )}
+        <DsCard onClick={onClick}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            {selected ? (
+              <DsStandardTextField
+                fontSize={!index && 'xl'}
+                onChange={onChange('title')}
+                value={displayTitle}
+              />
+            ) : (
+              <Typography {...(!index && { variant: 'h4' })}>
+                {displayTitle}
+              </Typography>
+            )}
+            {length > 1 && <DsDeleteIconButton onClick={onDelete} />}
+          </Stack>
           {selected ? (
             <DsStandardTextField
-              fontSize={!index && 'xl'}
-              onChange={onChange('title')}
-              value={displayTitle}
+              onChange={onChange('description')}
+              placeholder={placeholder}
+              value={description}
             />
           ) : (
-            <Typography {...(!index && { variant: 'h4' })}>
-              {displayTitle}
-            </Typography>
+            <Box sx={{ color: '#70757a' }}>
+              <Typography>{description || placeholder}</Typography>
+            </Box>
           )}
-          {length > 1 && <DsDeleteIconButton onClick={onDelete} />}
-        </Stack>
-        {selected ? (
-          <DsStandardTextField
-            onChange={onChange('description')}
-            placeholder={placeholder}
-            value={description}
-          />
-        ) : (
-          <Box sx={{ color: '#70757a' }}>
-            <Typography>{description || placeholder}</Typography>
-          </Box>
-        )}
-      </DsCard>
-    </div>,
-    children,
-  ];
+        </DsCard>
+      </div>
+      {children}
+    </>
+  );
 }
