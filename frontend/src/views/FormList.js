@@ -25,16 +25,16 @@ export default function FormList() {
       <DsAppBar onClick={createForm} text="Novo" />
       <DsContainer>
         <DsTableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nome</TableCell>
-                <TableCell>Criado em</TableCell>
-                <TableCell>Modificado em</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <DsCircularProgress action={getFormList}>
+          <DsCircularProgress action={getFormList}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nome</TableCell>
+                  <TableCell>Criado em</TableCell>
+                  <TableCell>Modificado em</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {formList.map((row) => (
                   <TableRow
                     key={row._id}
@@ -48,9 +48,9 @@ export default function FormList() {
                     <TableCell>{row.updatedAt}</TableCell>
                   </TableRow>
                 ))}
-              </DsCircularProgress>
-            </TableBody>
-          </Table>
+              </TableBody>
+            </Table>
+          </DsCircularProgress>
         </DsTableContainer>
       </DsContainer>
     </>

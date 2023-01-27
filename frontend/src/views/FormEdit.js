@@ -51,7 +51,7 @@ function FormEdit() {
             selected.questionIndex === questionIndex
               ? [
                   ...question.options,
-                  { text: `Option ${question.options.length + 1}` },
+                  { text: `Opção ${question.options.length + 1}` },
                 ]
               : question.options,
         })),

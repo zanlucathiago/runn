@@ -80,6 +80,8 @@ export const getNewQuestion = (type) => ({
   description: '',
   id: uuidv4(),
   model: MODELS.MULTIPLE_CHOICE.value,
+  options: [{ text: 'Opção 1' }],
+  other: false,
   title: QUESTION_TYPE[type].defaultValue,
   type,
 });
