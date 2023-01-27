@@ -2,23 +2,19 @@ export const SPACING = 2;
 
 export const MODELS = {
   SHORT_ANSWER: {
-    component: 'DsTextField',
     placeholder: 'Texto de resposta curta',
     value: 'SHORT_ANSWER',
     icon: 'ShortText',
     description: 'Resposta curta',
   },
   PARAGRAPH: {
-    component: 'DsMultilineTextField',
     placeholder: 'Texto de resposta longa',
     value: 'PARAGRAPH',
     icon: 'Subject',
     description: 'Parágrafo',
   },
   MULTIPLE_CHOICE: {
-    component: 'DsRadioGroup',
     option: {
-      component: 'DsRadioFormControlLabel',
       icon: 'RadioButtonUnchecked',
     },
     value: 'MULTIPLE_CHOICE',
@@ -26,9 +22,7 @@ export const MODELS = {
     description: 'Múltipla escolha',
   },
   CHECKBOXES: {
-    component: 'DsFormGroup',
     option: {
-      component: 'DsCheckboxFormControlLabel',
       icon: 'CheckBoxOutlineBlank',
     },
     value: 'CHECKBOXES',
@@ -36,21 +30,18 @@ export const MODELS = {
     description: 'Caixas de seleção',
   },
   DROPDOWN: {
-    component: 'DsSelect',
-    option: { component: 'DsMenuItem' },
+    option: {},
     value: 'DROPDOWN',
     icon: 'ArrowDropDownCircle',
     description: 'Lista suspensa',
   },
   DATE: {
-    component: 'DsDatePicker',
     placeholder: 'Mês, dia, ano',
     value: 'DATE',
     icon: 'Event',
     description: 'Data',
   },
   TIME: {
-    component: 'DsTimePicker',
     placeholder: 'Horário',
     value: 'TIME',
     icon: 'AccessTime',

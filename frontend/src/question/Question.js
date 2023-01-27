@@ -57,19 +57,17 @@ export default function Question({
                     const { value, description, icon } =
                       TYPES[outerIndex][innerIndex];
                     const IconComponent = icons[icon];
-                    return (
-                      <>
-                        {outerIndex && !innerIndex && <Divider />}
-                        <MenuItem value={value}>
-                          <Stack direction="row" alignItems="center">
-                            <ListItemIcon>
-                              <IconComponent />
-                            </ListItemIcon>
-                            <ListItemText>{description}</ListItemText>
-                          </Stack>
-                        </MenuItem>
-                      </>
-                    );
+                    return [
+                      outerIndex && !innerIndex && <Divider />,
+                      <MenuItem value={value}>
+                        <Stack direction="row" alignItems="center">
+                          <ListItemIcon>
+                            <IconComponent />
+                          </ListItemIcon>
+                          <ListItemText>{description}</ListItemText>
+                        </Stack>
+                      </MenuItem>,
+                    ];
                   })}
                 </DsSelect>
               </DsCol>
