@@ -36,11 +36,7 @@ export default function FormList() {
               </TableHead>
               <TableBody>
                 {formList.map((row) => (
-                  <TableRow
-                    key={row._id}
-                    onClick={onClickRow(row._id)}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
+                  <TableRow key={row._id} onClick={onClickRow(row._id)}>
                     <TableCell component="th" scope="row">
                       {row.title}
                     </TableCell>

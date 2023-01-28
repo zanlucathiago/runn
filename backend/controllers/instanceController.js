@@ -15,28 +15,24 @@ const getInstanceList = async (req, res) => {
         populate: { path: 'question', path: 'options' },
       },
     });
-  const columns = form.sections
-    .reduce((p, c) => [...p, ...c.questions], [])
-    .map((question) => ({
-      field: question._id,
-      headerName: question.title,
-      sortable: false,
-    }));
+  const questions = form.sections.reduce((p, c) => [...p, ...c.questions], []);
   res.status(200).json({
-    columns,
-    rows: form.formResponses.map((formResponse) =>
-      formResponse.questionResponses.reduce(
-        (p, c) => ({
-          ...p,
-          [c.question._id]: [
-            ...c.options.map((option) => option.text),
-            ...(c.text ? [c.text] : []),
-          ].join(', '),
-        }),
-        {
-          id: formResponse._id,
-        }
-      )
+    questions,
+    responses: form.formResponses.map(
+      (formResponse) =>
+        formResponse.questionResponses.reduce(
+          (p, c) => ({
+            ...p,
+            [c.question._id]: [
+              ...c.options.map((option) => option.text),
+              ...(c.text ? [c.text] : []),
+            ].join(', '),
+          }),
+          {
+            _id: formResponse._id,
+          }
+        )
+      // ({})
     ),
   });
 };
