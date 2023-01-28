@@ -2,13 +2,18 @@ const mongoose = require('mongoose');
 
 const formSchema = mongoose.Schema(
   {
-    user: {
-      type: String,
-    },
-    sections: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Section',
-    }]
+    sections: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Section',
+      },
+    ],
+    formResponses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'FormResponse',
+      },
+    ],
   },
   {
     timestamps: true,

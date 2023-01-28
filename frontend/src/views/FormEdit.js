@@ -12,7 +12,6 @@ import {
   handleChangeOption,
   handleClickDelete,
 } from '../services/sectionService';
-import formService from '../features/formService';
 import DsAppBar from '../components/DsAppBar';
 import DsCircularProgress from '../components/DsCircularProgress';
 import { useParams } from 'react-router-dom';
@@ -20,6 +19,7 @@ import { IconButton, Typography } from '@mui/material';
 import TemplateInput from '../question/TemplateInput';
 import TemplateOption from '../question/TemplateOption';
 import DsTextField from '../components/DsTextField';
+import formResource from '../features/formResource';
 
 function FormEdit() {
   const { id } = useParams();
@@ -31,7 +31,7 @@ function FormEdit() {
   const isSelected = (sectionIndex, questionIndex) =>
     sectionIndex === selected.sectionIndex &&
     selected.questionIndex === questionIndex;
-  const getForm = () => formService.getForm(id).then(setSections);
+  const getForm = () => formResource.getForm(id).then(setSections);
   const onAddQuestion = handleAddQuestion(sections, setSections, selected);
   const handleAddSection = () => {
     setSections([
@@ -72,7 +72,7 @@ function FormEdit() {
         ),
       }))
     );
-  const onClickSave = formService.saveForm(sections, id);
+  const onClickSave = formResource.saveForm(sections, id);
   const updateSectionProperty = (prop, sectionIndex, value) => {
     setSections(
       sections.map((section, index) => ({

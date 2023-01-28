@@ -8,8 +8,10 @@ export default function Date({ onChange, value }) {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="pt-br">
       <DatePicker
-        value={value}
-        onChange={(newValue) => onChange(moment(newValue).format('YYYY-MM-DD'))}
+        value={value.text}
+        onChange={(newValue) =>
+          onChange({ text: moment(newValue).format('YYYY-MM-DD') })
+        }
         renderInput={(params) => (
           <TextField {...params} size="small" variant="standard" />
         )}

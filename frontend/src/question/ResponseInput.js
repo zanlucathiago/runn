@@ -12,9 +12,9 @@ function humanize(str) {
 }
 
 export default function ResponseInput({ children, model, onChange }) {
-  const [value, setValue] = useState('');
-  const handleChange = (value) => {
-    setValue(value);
+  const [value, setValue] = useState({ text: '', options: [''] });
+  const handleChange = (newValue) => {
+    setValue({ ...value, ...newValue });
     onChange(value);
   };
   const InputComponent = Components[humanize(MODELS[model].value)];

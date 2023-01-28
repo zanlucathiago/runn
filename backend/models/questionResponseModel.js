@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
-const optionSchema = mongoose.Schema(
+const questionResponseSchema = mongoose.Schema(
   {
-    question: {
+    formResponse: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Question',
+      ref: 'Form',
     },
-    questionResponses: [
+    options: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'QuestionResponse',
+        ref: 'Option',
       },
     ],
     text: {
@@ -22,4 +22,4 @@ const optionSchema = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Option', optionSchema);
+module.exports = mongoose.model('QuestionResponse', questionResponseSchema);

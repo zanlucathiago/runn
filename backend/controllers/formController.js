@@ -27,7 +27,7 @@ const getFormList = async (req, res) => {
 };
 
 const createForm = async (_req, res) => {
-  const form = new Form({ user: 'Thiago' });
+  const form = new Form();
   const section = new Section({
     title: '',
     description: '',

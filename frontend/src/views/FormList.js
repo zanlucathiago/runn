@@ -11,15 +11,15 @@ import DsAppBar from '../components/DsAppBar';
 import DsCircularProgress from '../components/DsCircularProgress';
 import DsContainer from '../components/DsContainer';
 import DsTableContainer from '../components/DsTableContainer';
-import formService from '../features/formService';
+import formResource from '../features/formResource';
 
 export default function FormList() {
   const [formList, setFormList] = useState([]);
-  const getFormList = () => formService.getFormList().then(setFormList);
+  const getFormList = () => formResource.getFormList().then(setFormList);
   const navigate = useNavigate();
   const editForm = (id) => navigate(`/d/${id}/edit`);
   const onClickRow = (id) => () => editForm(id);
-  const createForm = () => formService.createForm().then(editForm);
+  const createForm = () => formResource.createForm().then(editForm);
   return (
     <>
       <DsAppBar onClick={createForm} text="Novo" />

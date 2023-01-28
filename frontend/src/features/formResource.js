@@ -28,11 +28,11 @@ const getForm = (id) =>
 
 const getFormList = () => axios.get(API_URL).then((response) => response.data);
 
-const formService = {
+const formResource = {
   createForm,
   getForm,
   getFormList,
   saveForm,
 };
 
-export default formService;
+export default formResource;
