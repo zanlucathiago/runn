@@ -27,6 +27,12 @@ const questionSchema = mongoose.Schema(
         ref: 'Option',
       },
     ],
+    questionResponses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'QuestionResponse',
+      },
+    ],
     other: {
       type: Boolean,
     },

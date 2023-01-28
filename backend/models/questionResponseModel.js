@@ -5,7 +5,7 @@ const questionResponseSchema = mongoose.Schema(
     formResponse: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Form',
+      ref: 'FormResponse',
     },
     options: [
       {
@@ -15,6 +15,11 @@ const questionResponseSchema = mongoose.Schema(
     ],
     text: {
       type: String,
+    },
+    question: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Question',
     },
   },
   {

@@ -2,24 +2,44 @@ const FormResponse = require('../models/formResponseModel');
 const Form = require('../models/formModel');
 const QuestionResponse = require('../models/questionResponseModel');
 
-// const getInstance = async (req, res) => {
-// const sections = await Section.find({ instance: req.params.id }).populate(
-//   'questions'
-// );
-// res.status(200).json(sections);
-// };
-
-// const getInstanceList = async (req, res) => {
-// const instances = await Instance.find().populate('sections');
-// res.status(200).json(
-//   instances.map((instance) => ({
-//     _id: instance._id,
-//     title: instance.sections[0].title,
-//     createdAt: instance.createdAt.toLocaleDateString('pt-BR'),
-//     updatedAt: instance.updatedAt.toLocaleDateString('pt-BR'),
-//   }))
-// );
-// };
+const getInstanceList = async (req, res) => {
+  const form = await Form.findById(req.params.id)
+    .populate({
+      path: 'sections',
+      populate: { path: 'questions' },
+    })
+    .populate({
+      path: 'formResponses',
+      populate: {
+        path: 'questionResponses',
+        populate: { path: 'question', path: 'options' },
+      },
+    });
+  const columns = form.sections
+    .reduce((p, c) => [...p, ...c.questions], [])
+    .map((question) => ({
+      field: question._id,
+      headerName: question.title,
+      sortable: false,
+    }));
+  res.status(200).json({
+    columns,
+    rows: form.formResponses.map((formResponse) =>
+      formResponse.questionResponses.reduce(
+        (p, c) => ({
+          ...p,
+          [c.question._id]: [
+            ...c.options.map((option) => option.text),
+            ...(c.text ? [c.text] : []),
+          ].join(', '),
+        }),
+        {
+          id: formResponse._id,
+        }
+      )
+    ),
+  });
+};
 
 const createInstance = async (req, res) => {
   const form = await Form.findById(req.params.id)
@@ -27,6 +47,9 @@ const createInstance = async (req, res) => {
       path: 'sections',
       populate: {
         path: 'questions',
+        populate: {
+          path: 'options',
+        },
       },
     })
     .populate({ path: 'formResponses' });
@@ -36,11 +59,26 @@ const createInstance = async (req, res) => {
     .map((question) => {
       const questionResponse = new QuestionResponse({
         formResponse,
+        question,
         text: req.body[question._id].text,
       });
-      const options = question.options.filter((option) =>
-        req.body[question._id].options.includes(option._id)
-      );
+      const options = question.options.filter((option) => {
+        const isSelected = req.body[question._id].options.includes(
+          option._id.toString()
+        );
+        if (isSelected) {
+          option.questionResponses = [
+            ...option.questionResponses,
+            questionResponse,
+          ];
+          return true;
+        }
+        return false;
+      });
+      question.questionResponses = [
+        ...question.questionResponses,
+        questionResponse,
+      ];
       questionResponse.options = options;
       return questionResponse;
     });
@@ -48,62 +86,25 @@ const createInstance = async (req, res) => {
   form.formResponses = [...form.formResponses, formResponse];
   for (const questionResponse of questionResponses) {
     for (const option of questionResponse.options) {
+      console.log(
+        '🚀 ~ file: instanceController.js:108 ~ createInstance ~ option',
+        option
+      );
       await option.save();
     }
     await questionResponse.save();
   }
   await formResponse.save();
+  for (const section of form.sections) {
+    for (const question of section.questions) {
+      await question.save();
+    }
+  }
   await form.save();
   res.status(200).json(formResponse._id);
 };
 
-// const saveInstance = async (req, res) => {
-// const instance = await Instance.findById(req.params.id).populate('sections');
-// for (const section of instance.sections) {
-//   for (const question of section.questions) {
-//     await Question.deleteOne({ _id: question._id });
-//   }
-//   await Section.deleteOne({ _id: section._id });
-// }
-// const sections = req.body.map((section) => {
-//   const sectionModel = new Section({
-//     title: section.title,
-//     description: section.description,
-//     instance,
-//   });
-//   const questions = section.questions.map(
-//     (question) =>
-//       new Question({
-//         description: question.description,
-//         model: question.model,
-//         title: question.title,
-//         type: question.type,
-//         section: sectionModel,
-//       })
-//   );
-//   sectionModel.questions = questions;
-//   return {
-//     section: sectionModel,
-//     questions,
-//   };
-// });
-// instance.sections = sections.map(({ section }) => section);
-// await instance.save();
-// for (const data of sections) {
-//   await data.section.save();
-//   for (const question of data.questions) {
-//     await question.save();
-//   }
-// }
-// res.status(200).json(instance._id);
-// };
-
-// const deleteInstance = async (req, res) => {};
-
 module.exports = {
-  // getInstance,
-  // getInstanceList,
+  getInstanceList,
   createInstance,
-  // saveInstance,
-  // deleteInstance,
 };
