@@ -18,21 +18,19 @@ const getInstanceList = async (req, res) => {
   const questions = form.sections.reduce((p, c) => [...p, ...c.questions], []);
   res.status(200).json({
     questions,
-    responses: form.formResponses.map(
-      (formResponse) =>
-        formResponse.questionResponses.reduce(
-          (p, c) => ({
-            ...p,
-            [c.question._id]: [
-              ...c.options.map((option) => option.text),
-              ...(c.text ? [c.text] : []),
-            ].join(', '),
-          }),
-          {
-            _id: formResponse._id,
-          }
-        )
-      // ({})
+    responses: form.formResponses.map((formResponse) =>
+      formResponse.questionResponses.reduce(
+        (p, c) => ({
+          ...p,
+          [c.question._id]: [
+            ...c.options.map((option) => option.text),
+            ...(c.text ? [c.text] : []),
+          ].join(', '),
+        }),
+        {
+          _id: formResponse._id,
+        }
+      )
     ),
   });
 };
@@ -82,10 +80,6 @@ const createInstance = async (req, res) => {
   form.formResponses = [...form.formResponses, formResponse];
   for (const questionResponse of questionResponses) {
     for (const option of questionResponse.options) {
-      console.log(
-        '🚀 ~ file: instanceController.js:108 ~ createInstance ~ option',
-        option
-      );
       await option.save();
     }
     await questionResponse.save();

@@ -28,8 +28,8 @@ export default function FormResponses() {
         </IconButton>
       </DsAppBar>
       <DsContainer maxWidth="lg">
-        <DsTableContainer>
-          <DsCircularProgress action={getDocumentList}>
+        <DsCircularProgress action={getDocumentList}>
+          <DsTableContainer>
             <Table>
               <TableHead>
                 <TableRow>
@@ -50,8 +50,8 @@ export default function FormResponses() {
                 ))}
               </TableBody>
             </Table>
-          </DsCircularProgress>
-        </DsTableContainer>
+          </DsTableContainer>
+        </DsCircularProgress>
       </DsContainer>
     </>
   );

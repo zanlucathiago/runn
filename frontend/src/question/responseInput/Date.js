@@ -13,7 +13,12 @@ export default function Date({ onChange, value }) {
           onChange({ text: moment(newValue).format('YYYY-MM-DD') })
         }
         renderInput={(params) => (
-          <TextField {...params} size="small" variant="standard" />
+          <TextField
+            {...params}
+            inputProps={{ ...params.inputProps, placeholder: 'dd/mm/aaaa' }}
+            size="small"
+            variant="standard"
+          />
         )}
       />
     </LocalizationProvider>

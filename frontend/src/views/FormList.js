@@ -24,8 +24,8 @@ export default function FormList() {
     <>
       <DsAppBar onClick={createForm} text="Novo" />
       <DsContainer>
-        <DsTableContainer>
-          <DsCircularProgress action={getFormList}>
+        <DsCircularProgress action={getFormList}>
+          <DsTableContainer>
             <Table>
               <TableHead>
                 <TableRow>
@@ -46,8 +46,8 @@ export default function FormList() {
                 ))}
               </TableBody>
             </Table>
-          </DsCircularProgress>
-        </DsTableContainer>
+          </DsTableContainer>
+        </DsCircularProgress>
       </DsContainer>
     </>
   );
