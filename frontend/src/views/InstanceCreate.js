@@ -1,3 +1,4 @@
+import EditIcon from '@mui/icons-material/Edit';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import DsCircularProgress from '../components/DsCircularProgress';
@@ -8,6 +9,7 @@ import Question from '../question/Question';
 import ResponseInput from '../question/ResponseInput';
 import ResponseInputOption from '../question/ResponseInputOption';
 import Section from '../section/Section';
+import { Fab } from '@mui/material';
 
 export default function InstanceCreate() {
   const { id } = useParams();
@@ -19,6 +21,13 @@ export default function InstanceCreate() {
   const handleClick = () => documentResource.createDocument(id, answers);
   return (
     <DsContainer maxWidth="sm" onClick={handleClick}>
+      <Fab
+        color="secondary"
+        href={`/d/${id}/edit`}
+        sx={{ position: 'absolute', bottom: 16, right: 16 }}
+      >
+        <EditIcon />
+      </Fab>
       <DsCircularProgress action={getForm}>
         {sections.map((section, sectionIndex) => (
           <Section

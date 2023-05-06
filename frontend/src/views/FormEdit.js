@@ -15,11 +15,12 @@ import {
 import DsAppBar from '../components/DsAppBar';
 import DsCircularProgress from '../components/DsCircularProgress';
 import { useParams } from 'react-router-dom';
-import { IconButton, Typography } from '@mui/material';
+import { Button, IconButton, Typography } from '@mui/material';
 import TemplateInput from '../question/TemplateInput';
 import TemplateOption from '../question/TemplateOption';
 import DsTextField from '../components/DsTextField';
 import formResource from '../features/formResource';
+import Validation from '../question/Validation';
 
 function FormEdit() {
   const { id } = useParams();
@@ -128,11 +129,56 @@ function FormEdit() {
         })),
       }))
     );
+  const onClickAddValidation = (sectionIndex, questionIndex) => () =>
+    setSections(
+      sections.map((section, sIndex) => ({
+        ...section,
+        questions: section.questions.map((question, qIndex) => ({
+          ...question,
+          validations:
+            qIndex === questionIndex && sIndex === sectionIndex
+              ? [...question.validations, '   ']
+              : question.validations,
+        })),
+      }))
+    );
+  const handleChangeValidation =
+    (idx, sectionIndex, questionIndex) => (value) =>
+      setSections(
+        sections.map((section, sIndex) => ({
+          ...section,
+          questions: section.questions.map((question, qIndex) => ({
+            ...question,
+            validations: question.validations.map((validation, vIndex) =>
+              vIndex === idx &&
+              qIndex === questionIndex &&
+              sIndex === sectionIndex
+                ? value
+                : validation
+            ),
+          })),
+        }))
+      );
+  const handleDeleteValidation = (idx, sectionIndex, questionIndex) => () =>
+    setSections(
+      sections.map((section, sIndex) => ({
+        ...section,
+        questions: section.questions.map((question, qIndex) => ({
+          ...question,
+          validations: question.validations.filter(
+            (validation, vIndex) =>
+              vIndex !== idx ||
+              qIndex !== questionIndex ||
+              sIndex !== sectionIndex
+          ),
+        })),
+      }))
+    );
   const anchorEl = getAnchorElement(sections, selected);
   return (
     <>
       <DsAppBar onClick={onClickSave} text="Salvar">
-        <IconButton href={`/d/e/${id}/view`}>
+        <IconButton href={`/d/e/${id}/view`} target="_blank">
           <RemoveRedEyeOutlinedIcon sx={{ color: '#FFF' }} />
         </IconButton>
       </DsAppBar>
@@ -144,6 +190,7 @@ function FormEdit() {
                 ({ description, id, questions, title }, sectionIndex) => (
                   <Section
                     description={description}
+                    editable
                     key={sectionIndex}
                     length={sections.length}
                     index={sectionIndex}
@@ -156,6 +203,7 @@ function FormEdit() {
                     {questions.map((question, questionIndex) => (
                       <Question
                         description={question.description}
+                        editable
                         key={questionIndex}
                         model={question.model}
                         onChange={onChangeQuestion(sectionIndex, questionIndex)}
@@ -167,6 +215,7 @@ function FormEdit() {
                         selected={isSelected(sectionIndex, questionIndex)}
                         title={question.title}
                         type={question.type}
+                        length={question.validations.length}
                       >
                         <TemplateInput
                           length={question.options.length}
@@ -205,6 +254,33 @@ function FormEdit() {
                             </TemplateOption>
                           ))}
                         </TemplateInput>
+                        {question.validations.map((validation, idx) => (
+                          <Validation
+                            key={idx}
+                            model={question.model}
+                            onChange={handleChangeValidation(
+                              idx,
+                              sectionIndex,
+                              questionIndex
+                            )}
+                            onClickDelete={handleDeleteValidation(
+                              idx,
+                              sectionIndex,
+                              questionIndex
+                            )}
+                            validation={validation}
+                          />
+                        ))}
+                        {question.validations.length ? (
+                          <Button
+                            onClick={onClickAddValidation(
+                              sectionIndex,
+                              questionIndex
+                            )}
+                          >
+                            Adicionar validação
+                          </Button>
+                        ) : null}
                       </Question>
                     ))}
                   </Section>
