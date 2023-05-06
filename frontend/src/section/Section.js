@@ -1,12 +1,14 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import DsBox from '../components/DsBox';
 import DsCard from '../components/DsCard';
 import DsDeleteIconButton from '../components/DsDeleteIconButton';
 import DsStandardTextField from '../components/DsStandardTextField';
+import DsDescription from '../components/DsDescription';
 
 export default function Section({
   children,
   description,
+  editable = false,
   index,
   length,
   onChange,
@@ -64,9 +66,9 @@ export default function Section({
               value={description}
             />
           ) : (
-            <Box sx={{ color: '#70757a' }}>
-              <Typography>{description || placeholder}</Typography>
-            </Box>
+            <DsDescription hidden={!editable}>
+              {description || placeholder}
+            </DsDescription>
           )}
         </DsCard>
       </div>
