@@ -51,15 +51,14 @@ const createInstance = async (req, res) => {
   const questionResponses = form.sections
     .reduce((p, c) => [...p, ...c.questions], [])
     .map((question) => {
+      const { options = [], text } = req.body[question._id] || {};
       const questionResponse = new QuestionResponse({
         formResponse,
         question,
-        text: req.body[question._id].text,
+        text,
       });
-      const options = question.options.filter((option) => {
-        const isSelected = req.body[question._id].options.includes(
-          option._id.toString()
-        );
+      const optionsModels = question.options.filter((option) => {
+        const isSelected = options.includes(option._id.toString());
         if (isSelected) {
           option.questionResponses = [
             ...option.questionResponses,
@@ -73,7 +72,7 @@ const createInstance = async (req, res) => {
         ...question.questionResponses,
         questionResponse,
       ];
-      questionResponse.options = options;
+      questionResponse.options = optionsModels;
       return questionResponse;
     });
   formResponse.questionResponses = questionResponses;
