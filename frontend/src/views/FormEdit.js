@@ -187,11 +187,11 @@ function FormEdit() {
           {sections.length ? (
             <>
               {sections.map(
-                ({ description, id, questions, title }, sectionIndex) => (
+                ({ description, id, questions, title, _id }, sectionIndex) => (
                   <Section
                     description={description}
                     editable
-                    key={sectionIndex}
+                    key={_id || id}
                     length={sections.length}
                     index={sectionIndex}
                     onChange={handleChange(sectionIndex)}
@@ -204,7 +204,7 @@ function FormEdit() {
                       <Question
                         description={question.description}
                         editable
-                        key={questionIndex}
+                        key={question._id || question.id}
                         model={question.model}
                         onChange={onChangeQuestion(sectionIndex, questionIndex)}
                         onClick={handleClick(sectionIndex, questionIndex)}
@@ -215,7 +215,9 @@ function FormEdit() {
                         selected={isSelected(sectionIndex, questionIndex)}
                         title={question.title}
                         type={question.type}
-                        length={question.validations.length}
+                        length={
+                          question.validations ? question.validations.length : 0
+                        }
                       >
                         <TemplateInput
                           length={question.options.length}
@@ -254,7 +256,7 @@ function FormEdit() {
                             </TemplateOption>
                           ))}
                         </TemplateInput>
-                        {question.validations.map((validation, idx) => (
+                        {(question.validations || []).map((validation, idx) => (
                           <Validation
                             key={idx}
                             model={question.model}
@@ -271,7 +273,7 @@ function FormEdit() {
                             validation={validation}
                           />
                         ))}
-                        {question.validations.length ? (
+                        {question.validations && question.validations.length ? (
                           <Button
                             onClick={onClickAddValidation(
                               sectionIndex,
