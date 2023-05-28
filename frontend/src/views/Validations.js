@@ -2,16 +2,16 @@ import { Button } from '@mui/material';
 import Validation from '../question/Validation';
 import { getNewValidation } from '../services/sectionService';
 
-export default function Validations({
-  children,
-  model,
-  onChange,
-  validations,
-}) {
-  const handleChangeValidation = (idx) => (value) => {
+export default function Validations({ onChange, validations }) {
+  const handleChangeValidation = (idx) => (property) => (event) => {
     onChange(
       validations.map((validation, vIndex) =>
-        vIndex === idx ? value : validation
+        vIndex === idx
+          ? {
+              ...validation,
+              [property]: event.target.value,
+            }
+          : validation
       )
     );
   };
@@ -26,14 +26,11 @@ export default function Validations({
       {(validations || []).map((validation, idx) => (
         <Validation
           key={validation._id || validation.id}
-          model={model}
           onChange={handleChangeValidation(idx)}
           onClickDelete={handleDeleteValidation(idx)}
           expression={validation.expression}
           operator={validation.operator}
-        >
-          {children}
-        </Validation>
+        />
       ))}
       {validations?.length ? (
         <Button onClick={onClickAddValidation()}>Adicionar validação</Button>

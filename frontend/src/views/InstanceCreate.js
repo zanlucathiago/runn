@@ -1,6 +1,6 @@
 import EditIcon from '@mui/icons-material/Edit';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import DsCircularProgress from '../components/DsCircularProgress';
 import DsContainer from '../components/DsContainer';
 import documentResource from '../features/documentResource';
@@ -15,7 +15,13 @@ export default function InstanceCreate() {
   const { id } = useParams();
   const [answers, setAnswers] = useState({});
   const [sections, setSections] = useState([]);
-  const getForm = () => formResource.getForm(id).then(setSections);
+  const [searchParams] = useSearchParams();
+  const getForm = () =>
+    formResource.getForm(id, searchParams).then(setAnswersAndSections);
+  const setAnswersAndSections = ({ answers, sections }) => {
+    setAnswers(answers);
+    setSections(sections);
+  };
   const onChange = (questionId) => (value) =>
     setAnswers({ ...answers, [questionId]: value });
   const handleClick = () => documentResource.createDocument(id, answers);
@@ -47,6 +53,7 @@ export default function InstanceCreate() {
                 <ResponseInput
                   model={question.model}
                   onChange={onChange(question._id)}
+                  value={answers[question._id]}
                 >
                   {question.options.map((option, optionIndex) => (
                     <ResponseInputOption

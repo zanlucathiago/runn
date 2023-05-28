@@ -11,7 +11,19 @@ const getForm = async (req, res) => {
       path: 'options',
     },
   });
-  res.status(200).json(sections);
+  const answers = {};
+  sections.forEach(section => {
+    section.questions.forEach(question => {
+      const questionId = question._id;
+      const entryQuestionIdValue = req.query[`entry.${questionId}`]
+      if (entryQuestionIdValue) {
+        answers[questionId] = {
+          text: entryQuestionIdValue,
+        }
+      }
+    })
+  })
+  res.status(200).json({ answers, sections });
 };
 
 const getFormList = async (req, res) => {

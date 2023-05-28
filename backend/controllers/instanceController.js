@@ -12,7 +12,7 @@ const getInstanceList = async (req, res) => {
       path: 'formResponses',
       populate: {
         path: 'questionResponses',
-        populate: { path: 'question', path: 'options' },
+        populate: [{ path: 'question' }, { path: 'options' }],
       },
     });
   const questions = form.sections.reduce((p, c) => [...p, ...c.questions], []);
