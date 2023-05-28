@@ -36,6 +36,8 @@ const createForm = async (_req, res) => {
   const question = new Question({
     description: '',
     model: MODELS.MULTIPLE_CHOICE,
+    other: false,
+    primaryKey: false,
     title: '',
     type: QUESTION_TYPE.QUESTION,
     section,
@@ -82,6 +84,7 @@ const saveForm = async (req, res) => {
         description: question.description,
         model: question.model,
         other: question.other,
+        primaryKey: question.primaryKey,
         title: question.title,
         type: question.type,
         section: sectionModel,
