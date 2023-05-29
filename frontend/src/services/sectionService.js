@@ -1,6 +1,21 @@
 import { v4 as uuidv4 } from 'uuid';
 import { MODELS, QUESTION_TYPE } from '../constants/contants';
 
+const shouldUpdateOptions = (prop, newValue, oldValue) => {
+  if (prop === 'model') {
+    if (MODELS[newValue].option && !MODELS[oldValue].option) {
+      return {
+        options: [{ text: 'Opção 1' }],
+      };
+    }
+    if (!MODELS[newValue].option && MODELS[oldValue].option) {
+      return {
+        options: [],
+      };
+    }
+  }
+};
+
 export const handleChangeQuestion =
   (sections, setSections) =>
   (sectionIndex, questionIndex) =>
@@ -15,6 +30,11 @@ export const handleChangeQuestion =
                 qIndex === questionIndex
                   ? {
                       ...question,
+                      ...shouldUpdateOptions(
+                        prop,
+                        event.target.value,
+                        question.model
+                      ),
                       [prop]: event.target.value,
                     }
                   : question
@@ -84,6 +104,7 @@ export const getNewQuestion = (type) => ({
   other: false,
   title: QUESTION_TYPE[type].defaultValue,
   type,
+  validations: [],
 });
 
 export const getAnchorElement = (sections, selected) =>
@@ -121,4 +142,10 @@ export const getNewSection = () => ({
   id: uuidv4(),
   questions: [],
   title: '',
+});
+
+export const getNewValidation = () => ({
+  id: uuidv4(),
+  operator: '',
+  expression: '',
 });

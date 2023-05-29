@@ -1,4 +1,3 @@
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import { useState } from 'react';
 import DsContainer from '../components/DsContainer';
 import MainMenu from '../menu/MainMenu';
@@ -12,15 +11,14 @@ import {
   handleChangeOption,
   handleClickDelete,
 } from '../services/sectionService';
-import DsAppBar from '../components/DsAppBar';
 import DsCircularProgress from '../components/DsCircularProgress';
 import { useParams } from 'react-router-dom';
-import { Button, IconButton, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import TemplateInput from '../question/TemplateInput';
 import TemplateOption from '../question/TemplateOption';
 import DsTextField from '../components/DsTextField';
 import formResource from '../features/formResource';
-import Validation from '../question/Validation';
+import Validations from './Validations';
 
 function FormEdit() {
   const { id } = useParams();
@@ -32,7 +30,10 @@ function FormEdit() {
   const isSelected = (sectionIndex, questionIndex) =>
     sectionIndex === selected.sectionIndex &&
     selected.questionIndex === questionIndex;
-  const getForm = () => formResource.getForm(id).then(setSections);
+  const getForm = () => formResource.getForm(id).then(setSectionsData);
+  const setSectionsData = ({ sections }) => {
+    setSections(sections);
+  };
   const onAddQuestion = handleAddQuestion(sections, setSections, selected);
   const handleAddSection = () => {
     setSections([
@@ -129,7 +130,7 @@ function FormEdit() {
         })),
       }))
     );
-  const onClickAddValidation = (sectionIndex, questionIndex) => () =>
+  const onChangeValidations = (sectionIndex, questionIndex) => (value) =>
     setSections(
       sections.map((section, sIndex) => ({
         ...section,
@@ -137,167 +138,105 @@ function FormEdit() {
           ...question,
           validations:
             qIndex === questionIndex && sIndex === sectionIndex
-              ? [...question.validations, '   ']
+              ? value
               : question.validations,
-        })),
-      }))
-    );
-  const handleChangeValidation =
-    (idx, sectionIndex, questionIndex) => (value) =>
-      setSections(
-        sections.map((section, sIndex) => ({
-          ...section,
-          questions: section.questions.map((question, qIndex) => ({
-            ...question,
-            validations: question.validations.map((validation, vIndex) =>
-              vIndex === idx &&
-              qIndex === questionIndex &&
-              sIndex === sectionIndex
-                ? value
-                : validation
-            ),
-          })),
-        }))
-      );
-  const handleDeleteValidation = (idx, sectionIndex, questionIndex) => () =>
-    setSections(
-      sections.map((section, sIndex) => ({
-        ...section,
-        questions: section.questions.map((question, qIndex) => ({
-          ...question,
-          validations: question.validations.filter(
-            (validation, vIndex) =>
-              vIndex !== idx ||
-              qIndex !== questionIndex ||
-              sIndex !== sectionIndex
-          ),
         })),
       }))
     );
   const anchorEl = getAnchorElement(sections, selected);
   return (
-    <>
-      <DsAppBar onClick={onClickSave} text="Salvar">
-        <IconButton href={`/d/e/${id}/view`} target="_blank">
-          <RemoveRedEyeOutlinedIcon sx={{ color: '#FFF' }} />
-        </IconButton>
-      </DsAppBar>
-      <DsContainer maxWidth="md">
-        <DsCircularProgress action={getForm}>
-          {sections.length ? (
-            <>
-              {sections.map(
-                ({ description, id, questions, title, _id }, sectionIndex) => (
-                  <Section
-                    description={description}
-                    editable
-                    key={_id || id}
-                    length={sections.length}
-                    index={sectionIndex}
-                    onChange={handleChange(sectionIndex)}
-                    onClick={handleClick(sectionIndex, -1)}
-                    onDelete={handleDelete(sectionIndex)}
-                    selected={isSelected(sectionIndex, -1)}
-                    title={title}
-                  >
-                    {questions.map((question, questionIndex) => (
-                      <Question
-                        description={question.description}
-                        editable
-                        key={question._id || question.id}
-                        model={question.model}
-                        onChange={onChangeQuestion(sectionIndex, questionIndex)}
-                        onClick={handleClick(sectionIndex, questionIndex)}
-                        onClickDelete={onClickDelete(
-                          sectionIndex,
-                          questionIndex
-                        )}
+    <DsContainer maxWidth="md" onClick={onClickSave}>
+      <DsCircularProgress action={getForm}>
+        {sections.length ? (
+          <>
+            {sections.map(
+              ({ description, id, questions, title, _id }, sectionIndex) => (
+                <Section
+                  description={description}
+                  editable
+                  key={_id || id}
+                  length={sections.length}
+                  index={sectionIndex}
+                  onChange={handleChange(sectionIndex)}
+                  onClick={handleClick(sectionIndex, -1)}
+                  onDelete={handleDelete(sectionIndex)}
+                  selected={isSelected(sectionIndex, -1)}
+                  title={title}
+                >
+                  {questions.map((question, questionIndex) => (
+                    <Question
+                      description={question.description}
+                      primaryKey={question.primaryKey}
+                      editable
+                      key={question._id || question.id}
+                      model={question.model}
+                      onChange={onChangeQuestion(sectionIndex, questionIndex)}
+                      onClick={handleClick(sectionIndex, questionIndex)}
+                      onClickDelete={onClickDelete(sectionIndex, questionIndex)}
+                      selected={isSelected(sectionIndex, questionIndex)}
+                      title={question.title}
+                      type={question.type}
+                      length={
+                        question.validations ? question.validations.length : 0
+                      }
+                    >
+                      <TemplateInput
+                        length={question.options.length}
+                        onClickAdd={onClickAdd}
+                        onClickOther={onClickOther(sectionIndex, questionIndex)}
                         selected={isSelected(sectionIndex, questionIndex)}
-                        title={question.title}
-                        type={question.type}
-                        length={
-                          question.validations ? question.validations.length : 0
-                        }
+                        model={question.model}
+                        other={question.other}
                       >
-                        <TemplateInput
-                          length={question.options.length}
-                          onClickAdd={onClickAdd}
-                          onClickOther={onClickOther(
+                        {question.options.map((option, optionIndex) => (
+                          <TemplateOption
+                            index={optionIndex}
+                            key={option._id || option.id}
+                            onClick={onClickRemove(optionIndex)}
+                            selected={isSelected(sectionIndex, questionIndex)}
+                            model={question.model}
+                            text={option.text}
+                          >
+                            {isSelected(sectionIndex, questionIndex) ? (
+                              <DsTextField
+                                size="small"
+                                onChange={onChangeOption(
+                                  sectionIndex,
+                                  questionIndex,
+                                  optionIndex
+                                )}
+                                variant="standard"
+                                value={option.text}
+                              />
+                            ) : (
+                              <Typography>{option.text}</Typography>
+                            )}
+                          </TemplateOption>
+                        ))}
+                      </TemplateInput>
+                      {isSelected(sectionIndex, questionIndex) ? (
+                        <Validations
+                          onChange={onChangeValidations(
                             sectionIndex,
                             questionIndex
                           )}
-                          selected={isSelected(sectionIndex, questionIndex)}
-                          model={question.model}
-                          other={question.other}
-                        >
-                          {question.options.map((option, optionIndex) => (
-                            <TemplateOption
-                              index={optionIndex}
-                              key={optionIndex}
-                              onClick={onClickRemove(optionIndex)}
-                              selected={isSelected(sectionIndex, questionIndex)}
-                              model={question.model}
-                              text={option.text}
-                            >
-                              {isSelected(sectionIndex, questionIndex) ? (
-                                <DsTextField
-                                  size="small"
-                                  onChange={onChangeOption(
-                                    sectionIndex,
-                                    questionIndex,
-                                    optionIndex
-                                  )}
-                                  variant="standard"
-                                  value={option.text}
-                                />
-                              ) : (
-                                <Typography>{option.text}</Typography>
-                              )}
-                            </TemplateOption>
-                          ))}
-                        </TemplateInput>
-                        {(question.validations || []).map((validation, idx) => (
-                          <Validation
-                            key={idx}
-                            model={question.model}
-                            onChange={handleChangeValidation(
-                              idx,
-                              sectionIndex,
-                              questionIndex
-                            )}
-                            onClickDelete={handleDeleteValidation(
-                              idx,
-                              sectionIndex,
-                              questionIndex
-                            )}
-                            validation={validation}
-                          />
-                        ))}
-                        {question.validations && question.validations.length ? (
-                          <Button
-                            onClick={onClickAddValidation(
-                              sectionIndex,
-                              questionIndex
-                            )}
-                          >
-                            Adicionar validação
-                          </Button>
-                        ) : null}
-                      </Question>
-                    ))}
-                  </Section>
-                )
-              )}
-              <MainMenu
-                anchorEl={anchorEl}
-                onAddQuestion={onAddQuestion}
-                onAddSection={handleAddSection}
-              />
-            </>
-          ) : null}
-        </DsCircularProgress>
-      </DsContainer>
-    </>
+                          validations={question.validations}
+                        />
+                      ) : null}
+                    </Question>
+                  ))}
+                </Section>
+              )
+            )}
+            <MainMenu
+              anchorEl={anchorEl}
+              onAddQuestion={onAddQuestion}
+              onAddSection={handleAddSection}
+            />
+          </>
+        ) : null}
+      </DsCircularProgress>
+    </DsContainer>
   );
 }
 
