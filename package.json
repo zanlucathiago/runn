@@ -4,7 +4,9 @@
   "description": "ERP Maker",
   "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",
+    "start": "concurrently \"yarn start-web\" \"yarn start-server\"",
+    "start-web": "yarn workspace frontend start",
+    "start-server": "node backend/server.js",
     "server": "nodemon backend/server.js",
     "client": "npm start --prefix frontend"
   },
@@ -16,6 +18,10 @@
     "mongoose": "^7.2.1"
   },
   "devDependencies": {
+    "concurrently": "^8.0.1",
     "nodemon": "^2.0.22"
-  }
+  },
+  "workspaces": [
+    "frontend"
+  ]
 }
