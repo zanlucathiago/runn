@@ -8,7 +8,8 @@
     "start-web": "yarn workspace frontend start",
     "start-server": "node backend/server.js",
     "server": "nodemon backend/server.js",
-    "client": "npm start --prefix frontend"
+    "client": "npm start --prefix frontend",
+    "lint": "yarn workspace frontend lint"
   },
   "author": "Thiago Zanluca",
   "license": "MIT",
@@ -23,5 +24,6 @@
   },
   "workspaces": [
     "frontend"
-  ]
+  ],
+  "packageManager": "yarn@3.5.1"
 }
