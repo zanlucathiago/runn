@@ -4,38 +4,8 @@ const Section = require('../models/sectionModel');
 const Question = require('../models/questionModel');
 const Option = require('../models/optionModel');
 const Validation = require('../models/validationModel');
-
-const getPopulateOptions = () => [
-  {
-    path: 'questions',
-    populate: [
-      {
-        path: 'options',
-      },
-      {
-        path: 'validations',
-      },
-    ],
-  },
-  {
-    path: 'form',
-    populate: [
-      {
-        path: 'formResponses',
-        populate: [
-          {
-            path: 'questionResponses',
-            populate: [
-              {
-                path: 'question',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-];
+const { getPopulateOptions } = require('../services/populateService');
+const { createQuestionModelFromData } = require('../services/questionService');
 
 const isMatchingQuestionResponse =
   (optionIdString, questionIdString, queryParameters) => (questionResponse) => {
@@ -101,7 +71,7 @@ const getForm = async (req, res) => {
     for (const question of section.questions) {
       for (const validation of question.validations) {
         if (
-          validation.expression === 'FORM' &&
+          validation.expression === 'DUPLICATE_FORM' &&
           validation.operator === 'NOT_EXISTS'
         ) {
           question.options = question.options.filter(
@@ -160,35 +130,6 @@ const createForm = async (_req, res) => {
   await question.save();
   await option.save();
   res.status(200).json(form._id);
-};
-
-const createOptionFromText = (questionModel) => (option) =>
-  new Option({ text: option.text, question: questionModel });
-
-const createValidationFromExpression = (questionModel) => (validation) =>
-  new Validation({
-    expression: validation.expression,
-    operator: validation.operator,
-    question: questionModel,
-  });
-
-const createQuestionModelFromData = (sectionModel) => (question) => {
-  const questionModel = new Question({
-    description: question.description,
-    model: question.model,
-    other: question.other,
-    primaryKey: question.primaryKey,
-    title: question.title,
-    type: question.type,
-    section: sectionModel,
-  });
-  const options = question.options.map(createOptionFromText(questionModel));
-  questionModel.options = options;
-  const validations = question.validations.map(
-    createValidationFromExpression(questionModel)
-  );
-  questionModel.validations = validations;
-  return questionModel;
 };
 
 const createSectionModelFromData = (form) => (section) => {

@@ -15,25 +15,29 @@ const getInstanceList = async (req, res) => {
         populate: [{ path: 'question' }, { path: 'options' }],
       },
     });
-  const questions = form.sections.reduce((p, c) => [...p, ...c.questions], []);
+  const questions = form.sections.reduce(combineQuestions, []);
   res.status(200).json({
     questions,
-    responses: form.formResponses.map((formResponse) =>
-      formResponse.questionResponses.reduce(
-        (p, c) => ({
-          ...p,
-          [c.question._id]: [
-            ...c.options.map((option) => option.text),
-            ...(c.text ? [c.text] : []),
-          ].join(', '),
-        }),
-        {
-          _id: formResponse._id,
-        }
-      )
-    ),
+    responses: form.formResponses.map(generateFormResponseOptions),
   });
 };
+
+const combineQuestions = (p, c) => [...p, ...c.questions];
+
+const generateFormResponseOptions = (formResponse) =>
+  formResponse.questionResponses.reduce(generateQuestionOptions, {
+    _id: formResponse._id,
+  });
+
+const generateQuestionOptions = (p, c) => ({
+  ...p,
+  [c.question._id]: [
+    ...c.options.map(extractOptionText),
+    ...(c.text ? [c.text] : []),
+  ].join(', '),
+});
+
+const extractOptionText = (option) => option.text;
 
 const createInstance = async (req, res) => {
   const form = await Form.findById(req.params.id)
@@ -49,7 +53,7 @@ const createInstance = async (req, res) => {
     .populate({ path: 'formResponses' });
   const formResponse = new FormResponse({ form });
   const questionResponses = form.sections
-    .reduce((p, c) => [...p, ...c.questions], [])
+    .reduce(combineQuestions, [])
     .map((question) => {
       const { options = [], text } = req.body[question._id] || {};
       const questionResponse = new QuestionResponse({
@@ -57,17 +61,9 @@ const createInstance = async (req, res) => {
         question,
         text,
       });
-      const optionsModels = question.options.filter((option) => {
-        const isSelected = options.includes(option._id.toString());
-        if (isSelected) {
-          option.questionResponses = [
-            ...option.questionResponses,
-            questionResponse,
-          ];
-          return true;
-        }
-        return false;
-      });
+      const optionsModels = question.options.filter(
+        updateSelectedOptionWithResponse(options, questionResponse)
+      );
       question.questionResponses = [
         ...question.questionResponses,
         questionResponse,
@@ -92,6 +88,19 @@ const createInstance = async (req, res) => {
   await form.save();
   res.status(200).json(formResponse._id);
 };
+
+const updateSelectedOptionWithResponse =
+  (options, questionResponse) => (option) => {
+    const isSelected = options.includes(option._id.toString());
+    if (isSelected) {
+      option.questionResponses = [
+        ...option.questionResponses,
+        questionResponse,
+      ];
+      return true;
+    }
+    return false;
+  };
 
 module.exports = {
   getInstanceList,

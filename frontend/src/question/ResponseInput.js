@@ -1,13 +1,13 @@
 import Components from './responseInput';
 import { MODELS } from '../constants/contants';
 
-function humanize(str) {
-  let i,
-    frags = str.toLowerCase().split('_');
-  for (i = 0; i < frags.length; i++) {
-    frags[i] = frags[i].charAt(0).toUpperCase() + frags[i].slice(1);
-  }
-  return frags.join('');
+const capitalizeFirstLetter = (str) =>
+  str.charAt(0).toUpperCase() + str.slice(1);
+
+function convertSnakeCaseToCamelCase(str) {
+  const words = str.toLowerCase().split('_');
+  const capitalizedWords = words.map(capitalizeFirstLetter);
+  return capitalizedWords.join('');
 }
 
 export default function ResponseInput({
@@ -20,7 +20,8 @@ export default function ResponseInput({
     const toUpdate = { ...value, ...newValue };
     onChange(toUpdate);
   };
-  const InputComponent = Components[humanize(MODELS[model].value)];
+  const InputComponent =
+    Components[convertSnakeCaseToCamelCase(MODELS[model].value)];
   return (
     <InputComponent onChange={handleChange} value={value}>
       {children}
