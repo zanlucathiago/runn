@@ -3,92 +3,31 @@ const Form = require('../models/formModel');
 const Section = require('../models/sectionModel');
 const Question = require('../models/questionModel');
 const Option = require('../models/optionModel');
-const Validation = require('../models/validationModel');
 const { getPopulateOptions } = require('../services/populateService');
-const { createQuestionModelFromData } = require('../services/questionService');
+const {
+  createQuestionModelFromData,
+  filterQuestionOptions,
+} = require('../services/questionService');
+const {
+  deleteOptionsValidationsQuestions,
+  saveOptionsValidationsQuestions,
+} = require('../services/optionService');
+const { handleSectionQuestions } = require('../services/sectionService');
 
-const isMatchingQuestionResponse =
-  (optionIdString, questionIdString, queryParameters) => (questionResponse) => {
-    if (questionResponse.question._id.toString() === questionIdString) {
-      return questionResponse.options.some(
-        (questionResponseOption) =>
-          questionResponseOption._id.toString() === optionIdString
-      );
-    } else if (questionResponse.question.primaryKey) {
-      const entryValue =
-        queryParameters[`entry.${questionResponse.question._id}`];
-      if (questionResponse.question.options.length) {
-        return questionResponse.options.some(
-          (questionResponseOption) => questionResponseOption._id === entryValue
-        );
-      } else {
-        return questionResponse.text === entryValue;
-      }
-    }
-    return true;
-  };
-
-const isFormResponseMathing =
-  (...params) =>
-  (formResponse) =>
-    formResponse.questionResponses.every(isMatchingQuestionResponse(...params));
-
-const isOptionAvailable =
-  (formResponses, questionIdString, queryParameters) => (option) =>
-    !formResponses.some(
-      isFormResponseMathing(
-        option._id.toString(),
-        questionIdString,
-        queryParameters
-      )
-    );
-
-const handleQuestionEntry = (answers, queryParameters) => (question) => {
-  const questionId = question._id;
-  const entryQuestionIdValue = queryParameters[`entry.${questionId}`];
-  if (entryQuestionIdValue) {
-    answers[questionId] = question.options.length
-      ? {
-          options: [entryQuestionIdValue],
-        }
-      : {
-          text: entryQuestionIdValue,
-        };
-  }
-};
-
-const handleSectionQuestions =
-  (...params) =>
-  (section) => {
-    section.questions.forEach(handleQuestionEntry(...params));
-  };
-
-const getForm = async (req, res) => {
+async function processForm(req, res) {
   const modelSections = await Section.find({ form: req.params.id }).populate(
     getPopulateOptions()
   );
-  for (const section of modelSections) {
-    for (const question of section.questions) {
-      for (const validation of question.validations) {
-        if (
-          validation.expression === 'DUPLICATE_FORM' &&
-          validation.operator === 'NOT_EXISTS'
-        ) {
-          question.options = question.options.filter(
-            isOptionAvailable(
-              modelSections[0].form.formResponses,
-              question._id.toString(),
-              req.query
-            )
-          );
-        }
-      }
-    }
-  }
+
+  filterQuestionOptions(modelSections, req.query);
+
   const answers = {};
-  modelSections.forEach(handleSectionQuestions(answers, req.query));
+  modelSections.forEach((section) =>
+    handleSectionQuestions(section, answers, req.query)
+  );
+
   res.status(200).json({ answers, sections: modelSections });
-};
+}
 
 const formatFormDetails = (form) => ({
   _id: form._id,
@@ -125,10 +64,12 @@ const createForm = async (_req, res) => {
   question.options = [option];
   section.questions = [question];
   form.sections = [section];
-  await form.save();
-  await section.save();
-  await question.save();
-  await option.save();
+  await Promise.all([
+    form.save(),
+    section.save(),
+    question.save(),
+    option.save(),
+  ]);
   res.status(200).json(form._id);
 };
 
@@ -145,49 +86,30 @@ const createSectionModelFromData = (form) => (section) => {
   return sectionModel;
 };
 
-const saveForm = async (req, res) => {
+async function updateForm(req, res) {
   const form = await Form.findById(req.params.id).populate({
     path: 'sections',
     populate: {
       path: 'questions',
     },
   });
-  for (const section of form.sections) {
-    for (const question of section.questions) {
-      for (const option of question.options) {
-        await Option.deleteOne({ _id: option._id });
-      }
-      for (const validation of question.validations) {
-        await Validation.deleteOne({ _id: validation._id });
-      }
-      await Question.deleteOne({ _id: question._id });
-    }
-    await Section.deleteOne({ _id: section._id });
-  }
+
+  await deleteOptionsValidationsQuestions(form.sections);
+
   const sections = req.body.map(createSectionModelFromData(form));
   form.sections = sections;
-  for (const section of sections) {
-    for (const question of section.questions) {
-      for (const option of question.options) {
-        await option.save();
-      }
-      for (const validation of question.validations) {
-        await validation.save();
-      }
-      await question.save();
-    }
-    await section.save();
-  }
+  await saveOptionsValidationsQuestions(sections);
+
   await form.save();
   res.status(200).json(form._id);
-};
+}
 
 const deleteForm = async (req, res) => {};
 
 module.exports = {
-  getForm,
+  processForm,
   getFormList,
   createForm,
-  saveForm,
+  updateForm,
   deleteForm,
 };

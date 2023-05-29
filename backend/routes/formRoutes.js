@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const {
-  getForm,
+  processForm,
   getFormList,
   createForm,
-  saveForm,
+  updateForm,
   deleteForm,
 } = require('../controllers/formController');
 
 router.route('/').get(getFormList).post(createForm);
-router.route('/:id').get(getForm).delete(deleteForm).put(saveForm);
+router.route('/:id').get(processForm).delete(deleteForm).put(updateForm);
 
 module.exports = router;

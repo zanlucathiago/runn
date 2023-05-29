@@ -30,7 +30,7 @@ function FormEdit() {
   const isSelected = (sectionIndex, questionIndex) =>
     sectionIndex === selected.sectionIndex &&
     selected.questionIndex === questionIndex;
-  const getForm = () => formResource.getForm(id).then(setSectionsData);
+  const processForm = () => formResource.processForm(id).then(setSectionsData);
   const setSectionsData = ({ sections }) => {
     setSections(sections);
   };
@@ -74,7 +74,7 @@ function FormEdit() {
         ),
       }))
     );
-  const onClickSave = formResource.saveForm(sections, id);
+  const onClickSave = formResource.updateForm(sections, id);
   const updateSectionProperty = (prop, sectionIndex, value) => {
     setSections(
       sections.map((section, index) => ({
@@ -146,7 +146,7 @@ function FormEdit() {
   const anchorEl = getAnchorElement(sections, selected);
   return (
     <DsContainer maxWidth="md" onClick={onClickSave}>
-      <DsCircularProgress action={getForm}>
+      <DsCircularProgress action={processForm}>
         {sections.length ? (
           <>
             {sections.map(

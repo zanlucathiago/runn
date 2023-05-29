@@ -50,8 +50,8 @@ export default function InstanceCreate() {
   const [answers, setAnswers] = useState({});
   const [sections, setSections] = useState([]);
   const [searchParams] = useSearchParams();
-  const getForm = () =>
-    formResource.getForm(id, searchParams).then(setAnswersAndSections);
+  const processForm = () =>
+    formResource.processForm(id, searchParams).then(setAnswersAndSections);
   const setAnswersAndSections = ({ answers, sections }) => {
     setAnswers(answers);
     setSections(sections);
@@ -78,7 +78,7 @@ export default function InstanceCreate() {
       >
         <EditIcon />
       </Fab>
-      <DsCircularProgress action={getForm} key={location.search}>
+      <DsCircularProgress action={processForm} key={location.search}>
         {sections.map((section, sectionIndex) => (
           <Section
             description={section.description}
