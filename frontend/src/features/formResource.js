@@ -4,7 +4,7 @@ const API_URL = '/api/d/';
 
 const createForm = () => axios.post(API_URL).then((response) => response.data);
 
-const saveForm = (formData, id) => () =>
+const updateForm = (formData, id) => () =>
   axios
     .put(
       `${API_URL}${id}`,
@@ -28,7 +28,7 @@ const saveForm = (formData, id) => () =>
     )
     .then((response) => response.data);
 
-const getForm = (id, params) => {
+const processForm = (id, params) => {
   return axios
     .get(`${API_URL}${id}`, { params })
     .then((response) => response.data);
@@ -38,9 +38,9 @@ const getFormList = () => axios.get(API_URL).then((response) => response.data);
 
 const formResource = {
   createForm,
-  getForm,
+  processForm,
   getFormList,
-  saveForm,
+  updateForm,
 };
 
 export default formResource;
