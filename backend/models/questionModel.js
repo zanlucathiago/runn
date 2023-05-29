@@ -33,7 +33,16 @@ const questionSchema = mongoose.Schema(
         ref: 'QuestionResponse',
       },
     ],
+    validations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Validation',
+      },
+    ],
     other: {
+      type: Boolean,
+    },
+    primaryKey: {
       type: Boolean,
     },
   },
