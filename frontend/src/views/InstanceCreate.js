@@ -29,13 +29,19 @@ const processSectionQuestions =
   (section) =>
     section.questions.forEach(processQuestionAnswer(...params));
 
-const hasFormValidationExpression = (validation) =>
-  validation.expression === 'DUPLICATE_FORM' &&
-  validation.operator === 'NOT_EXISTS';
+const hasFormValidationExpression = (validation) => {
+  return (
+    validation.expression === 'DUPLICATE_FORM' &&
+    validation.operator === 'NOT_EXISTS'
+  );
+};
 
-const hasFormValidationInQuestion = (_id) => (question) =>
-  question._id !== _id &&
-  question.validations.some(hasFormValidationExpression);
+const hasFormValidationInQuestion = (_id) => (question) => {
+  return (
+    question._id !== _id &&
+    question.validations.some(hasFormValidationExpression)
+  );
+};
 
 const hasFormValidationInSection =
   (...params) =>
@@ -97,6 +103,7 @@ export default function InstanceCreate() {
                 <ResponseInput
                   model={question.model}
                   onChange={onChange(question)}
+                  validations={question.validations}
                   value={answers[question._id]}
                 >
                   {question.options.map((option) => (

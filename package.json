@@ -6,8 +6,8 @@
   "scripts": {
     "start": "concurrently \"yarn start-web\" \"yarn start-server\"",
     "start-web": "yarn workspace frontend start",
-    "start-server": "node backend/server.js",
-    "server": "nodemon backend/server.js",
+    "start-server": "nodemon backend/server.js",
+    "run-server": "node backend/server.js",
     "client": "npm start --prefix frontend",
     "lint": "yarn workspace frontend lint"
   },
