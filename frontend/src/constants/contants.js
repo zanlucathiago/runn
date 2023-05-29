@@ -65,14 +65,22 @@ export const QUESTION_TYPE = {
 
 export const OPERATORS = [
   {
+    value: 'EXISTS',
+    text: 'Existe/existem',
+  },
+  {
     value: 'NOT_EXISTS',
-    text: 'Não existe',
+    text: 'Não existe/existem',
   },
 ];
 
 export const EXPRESSIONS = [
   {
-    value: 'FORM',
+    value: 'AVAILABLE_OPTIONS',
+    text: 'Opções disponíveis (chave primária)',
+  },
+  {
+    value: 'DUPLICATE_FORM',
     text: 'Lançamento conflitante (chave primária)',
   },
 ];
