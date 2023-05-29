@@ -14,7 +14,9 @@ export default function DsAppBar({ children, onClick, text }) {
           </Box>
           <Stack direction="row" spacing={SPACING}>
             {children}
-            <DsLoadingButton onClick={onClick}>{text}</DsLoadingButton>
+            {text ? (
+              <DsLoadingButton onClick={onClick}>{text}</DsLoadingButton>
+            ) : null}
           </Stack>
         </Toolbar>
       </AppBar>
