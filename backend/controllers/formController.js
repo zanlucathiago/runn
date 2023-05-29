@@ -3,15 +3,9 @@ const Form = require('../models/formModel');
 const Section = require('../models/sectionModel');
 const Question = require('../models/questionModel');
 const Option = require('../models/optionModel');
+const Validation = require('../models/validationModel');
 const { getPopulateOptions } = require('../services/populateService');
-const {
-  createQuestionModelFromData,
-  filterQuestionOptions,
-} = require('../services/questionService');
-const {
-  deleteOptionsValidationsQuestions,
-  saveOptionsValidationsQuestions,
-} = require('../services/optionService');
+const { filterQuestionOptions } = require('../services/questionService');
 const { handleSectionQuestions } = require('../services/sectionService');
 
 async function processForm(req, res) {
@@ -73,36 +67,238 @@ const createForm = async (_req, res) => {
   res.status(200).json(form._id);
 };
 
-const createSectionModelFromData = (form) => (section) => {
-  const sectionModel = new Section({
-    title: section.title,
-    description: section.description,
-    form,
-  });
-  const questions = section.questions.map(
-    createQuestionModelFromData(sectionModel)
+const separateUpdateAndCreateItems = (data) =>
+  data.reduce(
+    ({ toCreate, toUpdate }, c) =>
+      c._id
+        ? {
+            toCreate,
+            toUpdate: [...toUpdate, c],
+          }
+        : { toUpdate, toCreate: [...toCreate, c] },
+    {
+      toUpdate: [],
+      toCreate: [],
+    }
   );
-  sectionModel.questions = questions;
-  return sectionModel;
+
+const deleteSectionAndUpdateForm = async (formSectionId, form) => {
+  await Section.deleteOne({ _id: formSectionId });
+  form.sections = form.sections.filter(
+    (section) => section._id.toString() !== formSectionId.toString()
+  );
 };
+
+const deleteQuestionAndUpdateSection = async (formQuestionId, section) => {
+  await Question.deleteOne({ _id: formQuestionId });
+  section.questions = section.questions.filter(
+    (question) => question._id.toString() !== formQuestionId.toString()
+  );
+};
+
+const deleteOptionAndUpdateQuestion = async (formOptionId, question) => {
+  await Option.deleteOne({ _id: formOptionId });
+  question.options = question.options.filter(
+    (option) => option._id.toString() !== formOptionId.toString()
+  );
+};
+
+const deleteValidationAndUpdateQuestion = async (
+  formValidationId,
+  question
+) => {
+  await Validation.deleteOne({ _id: formValidationId });
+  question.validations = question.validations.filter(
+    (validation) => validation._id.toString() !== formValidationId.toString()
+  );
+};
+
+const findUpdatedItem = (items, document) =>
+  items.toUpdate.find((item) => {
+    return item._id === document._id.toString();
+  });
 
 async function updateForm(req, res) {
   const form = await Form.findById(req.params.id).populate({
     path: 'sections',
     populate: {
       path: 'questions',
+      populate: [
+        {
+          path: 'options',
+        },
+        {
+          path: 'validations',
+        },
+      ],
     },
   });
-
-  await deleteOptionsValidationsQuestions(form.sections);
-
-  const sections = req.body.map(createSectionModelFromData(form));
-  form.sections = sections;
-  await saveOptionsValidationsQuestions(sections);
-
+  const separatedSections = separateUpdateAndCreateItems(req.body);
+  await updateSections(form, separatedSections);
+  await createSections(separatedSections, form);
   await form.save();
-  res.status(200).json(form._id);
+  res.status(200).json(
+    form.sections.map(({ _id, title, description, questions }) => ({
+      _id,
+      title,
+      description,
+      questions: questions.map(
+        ({
+          _id,
+          description,
+          model,
+          other,
+          primaryKey,
+          title,
+          type,
+          options,
+          validations,
+        }) => ({
+          _id,
+          description,
+          model,
+          other,
+          primaryKey,
+          title,
+          type,
+          options: options.map(({ _id, text }) => ({ _id, text })),
+          validations: validations.map(({ _id, operator, expression }) => ({
+            _id,
+            operator,
+            expression,
+          })),
+        })
+      ),
+    }))
+  );
 }
+
+const updateSections = async (form, separatedSections) => {
+  for (const formSection of form.sections) {
+    const foundSection = findUpdatedItem(separatedSections, formSection);
+    if (!foundSection) {
+      await deleteSectionAndUpdateForm(formSection._id, form);
+    } else {
+      formSection.title = foundSection.title;
+      formSection.description = foundSection.description;
+
+      const separatedQuestions = separateUpdateAndCreateItems(
+        foundSection.questions
+      );
+      await updateQuestions(formSection, separatedQuestions);
+      await createQuestions(separatedQuestions, formSection);
+      await formSection.save();
+    }
+  }
+};
+
+const createSections = async (separatedSections, form) => {
+  for (const bodySection of separatedSections.toCreate) {
+    const newSection = new Section({
+      title: bodySection.title,
+      description: bodySection.description,
+      form,
+    });
+    await newSection.save();
+    form.sections = [...form.sections, newSection];
+  }
+};
+
+const updateQuestions = async (formSection, separatedQuestions) => {
+  for (const formQuestion of formSection.questions) {
+    const foundQuestion = findUpdatedItem(separatedQuestions, formQuestion);
+    if (!foundQuestion) {
+      await deleteQuestionAndUpdateSection(formQuestion._id, formSection);
+    } else {
+      formQuestion.description = foundQuestion.description;
+      formQuestion.model = foundQuestion.model;
+      formQuestion.other = foundQuestion.other;
+      formQuestion.primaryKey = foundQuestion.primaryKey;
+      formQuestion.title = foundQuestion.title;
+      formQuestion.type = foundQuestion.type;
+
+      const separatedOptions = separateUpdateAndCreateItems(
+        foundQuestion.options
+      );
+      await updateOptions(formQuestion, separatedOptions);
+      await createOptions(separatedOptions, formQuestion);
+
+      const separatedValidations = separateUpdateAndCreateItems(
+        foundQuestion.validations
+      );
+      await updateValidations(formQuestion, separatedValidations);
+      await createValidations(separatedValidations, formQuestion);
+      await formQuestion.save();
+    }
+  }
+};
+
+const updateOptions = async (formQuestion, separatedOptions) => {
+  for (const formOption of formQuestion.options) {
+    const foundOption = findUpdatedItem(separatedOptions, formOption);
+    if (!foundOption) {
+      await deleteOptionAndUpdateQuestion(formOption._id, formQuestion);
+    } else {
+      formOption.text = foundOption.text;
+      await formOption.save();
+    }
+  }
+};
+
+const updateValidations = async (formQuestion, separatedValidations) => {
+  for (const formValidation of formQuestion.validations) {
+    const foundValidation = findUpdatedItem(
+      separatedValidations,
+      formValidation
+    );
+    if (!foundValidation) {
+      await deleteValidationAndUpdateQuestion(formValidation._id, formQuestion);
+    } else {
+      formValidation.operator = foundValidation.operator;
+      formValidation.expression = foundValidation.expression;
+      await formValidation.save();
+    }
+  }
+};
+
+const createQuestions = async (separatedQuestions, formSection) => {
+  for (const bodyQuestion of separatedQuestions.toCreate) {
+    const newQuestion = new Question({
+      description: bodyQuestion.description,
+      model: bodyQuestion.model,
+      other: bodyQuestion.other,
+      primaryKey: bodyQuestion.primaryKey,
+      title: bodyQuestion.title,
+      type: bodyQuestion.type,
+      section: formSection,
+    });
+    await newQuestion.save();
+    formSection.questions = [...formSection.questions, newQuestion];
+  }
+};
+
+const createOptions = async (separatedOptions, formQuestion) => {
+  for (const bodyOption of separatedOptions.toCreate) {
+    const newOption = new Option({
+      text: bodyOption.text,
+      question: formQuestion,
+    });
+    await newOption.save();
+    formQuestion.options = [...formQuestion.options, newOption];
+  }
+};
+
+const createValidations = async (separatedValidations, formQuestion) => {
+  for (const bodyValidation of separatedValidations.toCreate) {
+    const newValidation = new Validation({
+      operator: bodyValidation.operator,
+      expression: bodyValidation.expression,
+      question: formQuestion,
+    });
+    await newValidation.save();
+    formQuestion.validations = [...formQuestion.validations, newValidation];
+  }
+};
 
 const deleteForm = async (req, res) => {};
 

@@ -74,7 +74,10 @@ function FormEdit() {
         ),
       }))
     );
-  const onClickSave = formResource.updateForm(sections, id);
+  const onClickSave = () =>
+    formResource.updateForm(sections, id).then((data) => {
+      return setSections(data);
+    });
   const updateSectionProperty = (prop, sectionIndex, value) => {
     setSections(
       sections.map((section, index) => ({
