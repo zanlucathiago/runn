@@ -1,3 +1,7 @@
+const Section = require('../models/sectionModel');
+const Question = require('../models/questionModel');
+const Validation = require('../models/validationModel');
+const Option = require('../models/optionModel');
 const { isFormResponseMathing } = require('./formResponseService');
 
 const createOptionFromText = (questionModel) => (option) =>
@@ -24,8 +28,8 @@ async function saveOptionsValidationsQuestions(sections) {
         Promise.all(
           question.validations.map((validation) => validation.save())
         ),
-        question.save(),
       ]);
+      await question.save();
     }
     await section.save();
   }

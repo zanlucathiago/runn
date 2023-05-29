@@ -1,11 +1,13 @@
 function handleSectionQuestions(section, answers, queryParams) {
-  return (question) => {
+  section.questions.forEach((question) => {
     const questionId = question._id;
-    const questionAnswer = section.form.formResponses[questionId];
-    if (questionAnswer?.text) {
-      answers[questionId] = questionAnswer.text;
+    const questionAnswer = queryParams[`entry.${questionId}`];
+    if (questionAnswer) {
+      answers[questionId] = {
+        text: questionAnswer,
+      };
     }
-  };
+  });
 }
 
 module.exports = {

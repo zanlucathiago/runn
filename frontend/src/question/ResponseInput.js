@@ -14,6 +14,7 @@ export default function ResponseInput({
   children,
   model,
   onChange,
+  validations,
   value = { text: null, options: [] },
 }) {
   const handleChange = (newValue) => {
@@ -23,7 +24,11 @@ export default function ResponseInput({
   const InputComponent =
     Components[convertSnakeCaseToCamelCase(MODELS[model].value)];
   return (
-    <InputComponent onChange={handleChange} value={value}>
+    <InputComponent
+      onChange={handleChange}
+      validations={validations}
+      value={value}
+    >
       {children}
     </InputComponent>
   );
