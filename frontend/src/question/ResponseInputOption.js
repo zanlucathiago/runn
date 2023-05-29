@@ -2,7 +2,7 @@ import { MODELS } from '../constants/contants';
 import Components from './responseInput';
 
 function humanize(str) {
-  var i,
+  let i,
     frags = str.toLowerCase().split('_');
   for (i = 0; i < frags.length; i++) {
     frags[i] = frags[i].charAt(0).toUpperCase() + frags[i].slice(1);

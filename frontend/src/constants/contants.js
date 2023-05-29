@@ -62,3 +62,17 @@ export const QUESTION_TYPE = {
   },
   QUESTION: { defaultValue: '', value: 'QUESTION' },
 };
+
+export const OPERATORS = [
+  {
+    value: 'NOT_EXISTS',
+    text: 'Não existe',
+  },
+];
+
+export const EXPRESSIONS = [
+  {
+    value: 'FORM',
+    text: 'Lançamento conflitante (chave primária)',
+  },
+];

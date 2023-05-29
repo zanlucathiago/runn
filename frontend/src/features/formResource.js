@@ -14,17 +14,25 @@ const saveForm = (formData, id) => () =>
           description: question.description,
           model: question.model,
           other: question.other,
+          primaryKey: question.primaryKey,
           title: question.title,
           type: question.type,
           options: question.options.map((option) => ({ text: option.text })),
+          validations: question.validations.map((validation) => ({
+            expression: validation.expression,
+            operator: validation.operator,
+          })),
         })),
         title: section.title,
       }))
     )
     .then((response) => response.data);
 
-const getForm = (id) =>
-  axios.get(`${API_URL}${id}`).then((response) => response.data);
+const getForm = (id, params) => {
+  return axios
+    .get(`${API_URL}${id}`, { params })
+    .then((response) => response.data);
+};
 
 const getFormList = () => axios.get(API_URL).then((response) => response.data);
 
