@@ -11,6 +11,7 @@ export default function Question({
   onChange,
   onClick,
   onClickDelete,
+  primaryKey,
   selected = false,
   title,
   type,
@@ -20,6 +21,7 @@ export default function Question({
     <DsCard selected={selected} onClick={onClick}>
       {type === QUESTION_TYPE.QUESTION.value ? (
         <InputQuestion
+          primaryKey={primaryKey}
           selected={selected}
           onChange={onChange}
           title={title}

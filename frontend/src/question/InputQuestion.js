@@ -6,12 +6,14 @@ import CheckIcon from '@mui/icons-material/Check';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Divider,
+  FormControlLabel,
   IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   Stack,
+  Switch,
   Typography,
 } from '@mui/material';
 import DsFilledTextField from '../components/DsFilledTextField';
@@ -20,12 +22,14 @@ import DsDescription from '../components/DsDescription';
 import DsDeleteIconButton from '../components/DsDeleteIconButton';
 import { TYPES } from '../constants/contants';
 import { useEffect, useState } from 'react';
+import { getNewValidation } from '../services/sectionService';
 
 export default function InputQuestion({
   children,
   selected,
   onChange,
   title,
+  primaryKey,
   model,
   description,
   onClickDelete,
@@ -36,12 +40,11 @@ export default function InputQuestion({
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   useEffect(() => {
-    console.log(
-      '🚀 ~ file: Question.js:43 ~ useEffect ~ description:',
-      description
-    );
     setShowDescription(Boolean(description));
   }, []);
+  const handleChange = (event) => {
+    onChange('primaryKey')({ target: { value: event.target.checked } });
+  };
   const handleClickDescription = () => {
     handleClose();
     if (description && showDescription) {
@@ -51,7 +54,9 @@ export default function InputQuestion({
   };
   const handleClickValidation = () => {
     handleClose();
-    onChange('validations')({ target: { value: length ? [] : ['   '] } });
+    onChange('validations')({
+      target: { value: length ? [] : [getNewValidation()] },
+    });
   };
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -112,6 +117,17 @@ export default function InputQuestion({
       <Stack direction="row" justifyContent="flex-end">
         <DsDeleteIconButton onClick={onClickDelete} />
         <Divider orientation="vertical" variant="middle" flexItem />
+        <FormControlLabel
+          control={
+            <Switch
+              color="primary"
+              checked={primaryKey}
+              onChange={handleChange}
+            />
+          }
+          label="Chave primária"
+          labelPlacement="start"
+        />
         <IconButton onClick={handleClick}>
           <MoreVertIcon />
         </IconButton>
