@@ -9,7 +9,8 @@
     "start-server": "nodemon backend/server.js",
     "run-server": "node backend/server.js",
     "client": "npm start --prefix frontend",
-    "lint": "yarn workspace frontend lint"
+    "lint": "eslint backend",
+    "lint:fix": "eslint src --fix"
   },
   "author": "Thiago Zanluca",
   "license": "MIT",
@@ -20,6 +21,9 @@
   },
   "devDependencies": {
     "concurrently": "^8.0.1",
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-config-airbnb-base": "latest",
+    "eslint-plugin-import": "^2.25.2",
     "nodemon": "^2.0.22"
   },
   "workspaces": [
