@@ -1,18 +1,18 @@
 import { Button } from '@mui/material';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Validation from '../question/Validation';
 import { getNewValidation } from '../services/sectionService';
 
-export default function Validations({ onChange, validations }) {
+function Validations({ onChange, validations }) {
   const handleChangeValidation = (idx) => (property) => (event) => {
     onChange(
-      validations.map((validation, vIndex) =>
-        vIndex === idx
-          ? {
-              ...validation,
-              [property]: event.target.value,
-            }
-          : validation
-      )
+      validations.map((validation, vIndex) => (vIndex === idx
+        ? {
+          ...validation,
+          [property]: event.target.value,
+        }
+        : validation)),
     );
   };
   const handleDeleteValidation = (idx) => () => {
@@ -38,3 +38,21 @@ export default function Validations({ onChange, validations }) {
     </>
   );
 }
+
+Validations.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  validations: PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      operator: PropTypes.string.isRequired,
+      expression: PropTypes.string.isRequired,
+    }),
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      operator: PropTypes.string.isRequired,
+      expression: PropTypes.string.isRequired,
+    }),
+  ])).isRequired,
+};
+
+export default Validations;

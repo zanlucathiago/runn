@@ -1,5 +1,6 @@
 import EditIcon from '@mui/icons-material/Edit';
-import { useState } from 'react';
+import { Fab } from '@mui/material';
+import React, { useState } from 'react';
 import {
   useLocation,
   useNavigate,
@@ -9,12 +10,10 @@ import {
 import DsCircularProgress from '../components/DsCircularProgress';
 import DsContainer from '../components/DsContainer';
 import documentResource from '../features/documentResource';
-import formResource from '../features/formResource';
 import Question from '../question/Question';
 import ResponseInput from '../question/ResponseInput';
 import ResponseInputOption from '../question/ResponseInputOption';
 import Section from '../section/Section';
-import { Fab } from '@mui/material';
 
 const processQuestionAnswer = (queryParams, updatedAnswers) => (question) => {
   const questionId = question._id;
@@ -24,29 +23,21 @@ const processQuestionAnswer = (queryParams, updatedAnswers) => (question) => {
   }
 };
 
-const processSectionQuestions =
-  (...params) =>
-  (section) =>
-    section.questions.forEach(processQuestionAnswer(...params));
+const processSectionQuestions = (...params) => (section) => section
+  .questions.forEach(processQuestionAnswer(...params));
 
-const hasFormValidationExpression = (validation) => {
-  return (
-    validation.expression === 'DUPLICATE_FORM' &&
-    validation.operator === 'NOT_EXISTS'
-  );
-};
+const hasFormValidationExpression = (validation) => (
+  validation.expression === 'DUPLICATE_FORM'
+  && validation.operator === 'NOT_EXISTS'
+);
 
-const hasFormValidationInQuestion = (_id) => (question) => {
-  return (
-    question._id !== _id &&
-    question.validations.some(hasFormValidationExpression)
-  );
-};
+const hasFormValidationInQuestion = (_id) => (question) => (
+  question._id !== _id
+  && question.validations.some(hasFormValidationExpression)
+);
 
-const hasFormValidationInSection =
-  (...params) =>
-  (section) =>
-    section.questions.some(hasFormValidationInQuestion(...params));
+const hasFormValidationInSection = (...params) => (section) => section
+  .questions.some(hasFormValidationInQuestion(...params));
 
 export default function InstanceCreate() {
   const location = useLocation();
@@ -56,24 +47,22 @@ export default function InstanceCreate() {
   const [answers, setAnswers] = useState({});
   const [sections, setSections] = useState([]);
   const [searchParams] = useSearchParams();
-  const processForm = () =>
-    formResource.processForm(id, searchParams).then(setAnswersAndSections);
-  const setAnswersAndSections = ({ answers, sections }) => {
-    setAnswers(answers);
-    setSections(sections);
+  const setAnswersAndSections = (data) => {
+    setAnswers(data.answers);
+    setSections(data.sections);
   };
-  const onChange =
-    ({ _id, primaryKey }) =>
-    (value) => {
-      const updatedAnswers = { ...answers, [_id]: value };
-      if (primaryKey && sections.some(hasFormValidationInSection(_id))) {
-        const queryParams = {};
-        sections.forEach(processSectionQuestions(queryParams, updatedAnswers));
-        navigate(`/d/e/${id}/view?${new URLSearchParams(queryParams)}`);
-      } else {
-        setAnswers(updatedAnswers);
-      }
-    };
+  const processForm = () => documentResource
+    .getDocument(id, searchParams).then(setAnswersAndSections);
+  const onChange = ({ _id, primaryKey }) => (value) => {
+    const updatedAnswers = { ...answers, [_id]: value };
+    if (primaryKey && sections.some(hasFormValidationInSection(_id))) {
+      const queryParams = {};
+      sections.forEach(processSectionQuestions(queryParams, updatedAnswers));
+      navigate(`/d/e/${id}/view?${new URLSearchParams(queryParams)}`);
+    } else {
+      setAnswers(updatedAnswers);
+    }
+  };
   const handleClick = () => documentResource.createDocument(id, answers);
   return (
     <DsContainer maxWidth="sm" onClick={handleClick}>
@@ -101,9 +90,10 @@ export default function InstanceCreate() {
                 type={question.type}
               >
                 <ResponseInput
+                  questionId={question.validations.some((validation) => validation.expression === 'AVAILABLE_OPTIONS'
+                    && validation.operator === 'EXISTS') && question._id}
                   model={question.model}
                   onChange={onChange(question)}
-                  validations={question.validations}
                   value={answers[question._id]}
                 >
                   {question.options.map((option) => (
