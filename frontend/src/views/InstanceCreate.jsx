@@ -91,7 +91,7 @@ export default function InstanceCreate() {
               >
                 <ResponseInput
                   questionId={question.validations.some((validation) => validation.expression === 'AVAILABLE_OPTIONS'
-                    && validation.operator === 'EXISTS') && question._id}
+                    && validation.operator === 'EXISTS') ? question._id : null}
                   model={question.model}
                   onChange={onChange(question)}
                   value={answers[question._id]}

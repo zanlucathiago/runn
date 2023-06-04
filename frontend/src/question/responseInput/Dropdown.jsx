@@ -23,9 +23,9 @@ function Dropdown({ children, onChange, value }) {
 Dropdown.propTypes = {
   children: PropTypes.node,
   onChange: PropTypes.func.isRequired,
-  value: PropTypes.arrayOf(PropTypes.shape({
-    options: PropTypes.string,
-  })).isRequired,
+  value: PropTypes.shape({
+    options: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
 };
 
 Dropdown.defaultProps = {
