@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-const API_URL = '/api/d/v/';
+const API_URL = '/api/d/e/v/';
 
-const getValidationList = (id) =>
-  axios.get(`${API_URL}${id}`).then((response) => response.data);
+const getValidationList = (id, params) => axios.get(`${API_URL}${id}`, { params }).then((response) => response.data);
 
-export default {
+const validationResource = {
   getValidationList,
 };
+
+export default validationResource;
