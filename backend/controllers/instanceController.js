@@ -1,6 +1,10 @@
 const FormResponse = require('../models/formResponseModel');
 const Form = require('../models/formModel');
 const QuestionResponse = require('../models/questionResponseModel');
+const { filterQuestionOptions } = require('../services/questionService');
+const { getPopulateOptions } = require('../services/populateService');
+const Section = require('../models/sectionModel');
+const { handleSectionQuestions } = require('../services/sectionService');
 
 const getInstanceList = async (req, res) => {
   const form = await Form.findById(req.params.id)
@@ -22,12 +26,24 @@ const getInstanceList = async (req, res) => {
   });
 };
 
+const getInstance = async (req, res) => {
+  const modelSections = await Section.find({ form: req.params.id }).populate(
+    getPopulateOptions(),
+  );
+
+  await filterQuestionOptions(modelSections, req.query);
+
+  const answers = {};
+  modelSections.forEach((section) => handleSectionQuestions(section, answers, req.query));
+
+  res.status(200).json({ answers, sections: modelSections });
+};
+
 const combineQuestions = (p, c) => [...p, ...c.questions];
 
-const generateFormResponseOptions = (formResponse) =>
-  formResponse.questionResponses.reduce(generateQuestionOptions, {
-    _id: formResponse._id,
-  });
+const generateFormResponseOptions = (formResponse) => formResponse.questionResponses.reduce(generateQuestionOptions, {
+  _id: formResponse._id,
+});
 
 const generateQuestionOptions = (p, c) => ({
   ...p,
@@ -62,7 +78,7 @@ const createInstance = async (req, res) => {
         text,
       });
       const optionsModels = question.options.filter(
-        updateSelectedOptionWithResponse(options, questionResponse)
+        updateSelectedOptionWithResponse(options, questionResponse),
       );
       question.questionResponses = [
         ...question.questionResponses,
@@ -89,20 +105,20 @@ const createInstance = async (req, res) => {
   res.status(200).json(formResponse._id);
 };
 
-const updateSelectedOptionWithResponse =
-  (options, questionResponse) => (option) => {
-    const isSelected = options.includes(option._id.toString());
-    if (isSelected) {
-      option.questionResponses = [
-        ...option.questionResponses,
-        questionResponse,
-      ];
-      return true;
-    }
-    return false;
-  };
+const updateSelectedOptionWithResponse = (options, questionResponse) => (option) => {
+  const isSelected = options.includes(option._id.toString());
+  if (isSelected) {
+    option.questionResponses = [
+      ...option.questionResponses,
+      questionResponse,
+    ];
+    return true;
+  }
+  return false;
+};
 
 module.exports = {
+  getInstance,
   getInstanceList,
   createInstance,
 };

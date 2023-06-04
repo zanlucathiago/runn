@@ -5,22 +5,14 @@ const Question = require('../models/questionModel');
 const Option = require('../models/optionModel');
 const Validation = require('../models/validationModel');
 const { getPopulateOptions } = require('../services/populateService');
-const { filterQuestionOptions } = require('../services/questionService');
-const { handleSectionQuestions } = require('../services/sectionService');
+const { transformData } = require('../services/dataService');
 
 async function processForm(req, res) {
   const modelSections = await Section.find({ form: req.params.id }).populate(
-    getPopulateOptions()
+    getPopulateOptions(),
   );
 
-  filterQuestionOptions(modelSections, req.query);
-
-  const answers = {};
-  modelSections.forEach((section) =>
-    handleSectionQuestions(section, answers, req.query)
-  );
-
-  res.status(200).json({ answers, sections: modelSections });
+  res.status(200).json({ answers: [], sections: modelSections });
 }
 
 const formatFormDetails = (form) => ({
@@ -67,56 +59,51 @@ const createForm = async (_req, res) => {
   res.status(200).json(form._id);
 };
 
-const separateUpdateAndCreateItems = (data) =>
-  data.reduce(
-    ({ toCreate, toUpdate }, c) =>
-      c._id
-        ? {
-            toCreate,
-            toUpdate: [...toUpdate, c],
-          }
-        : { toUpdate, toCreate: [...toCreate, c] },
-    {
-      toUpdate: [],
-      toCreate: [],
+const separateUpdateAndCreateItems = (data) => data.reduce(
+  ({ toCreate, toUpdate }, c) => (c._id
+    ? {
+      toCreate,
+      toUpdate: [...toUpdate, c],
     }
-  );
+    : { toUpdate, toCreate: [...toCreate, c] }),
+  {
+    toUpdate: [],
+    toCreate: [],
+  },
+);
 
 const deleteSectionAndUpdateForm = async (formSectionId, form) => {
   await Section.deleteOne({ _id: formSectionId });
   form.sections = form.sections.filter(
-    (section) => section._id.toString() !== formSectionId.toString()
+    (section) => section._id.toString() !== formSectionId.toString(),
   );
 };
 
 const deleteQuestionAndUpdateSection = async (formQuestionId, section) => {
   await Question.deleteOne({ _id: formQuestionId });
   section.questions = section.questions.filter(
-    (question) => question._id.toString() !== formQuestionId.toString()
+    (question) => question._id.toString() !== formQuestionId.toString(),
   );
 };
 
 const deleteOptionAndUpdateQuestion = async (formOptionId, question) => {
   await Option.deleteOne({ _id: formOptionId });
   question.options = question.options.filter(
-    (option) => option._id.toString() !== formOptionId.toString()
+    (option) => option._id.toString() !== formOptionId.toString(),
   );
 };
 
 const deleteValidationAndUpdateQuestion = async (
   formValidationId,
-  question
+  question,
 ) => {
   await Validation.deleteOne({ _id: formValidationId });
   question.validations = question.validations.filter(
-    (validation) => validation._id.toString() !== formValidationId.toString()
+    (validation) => validation._id.toString() !== formValidationId.toString(),
   );
 };
 
-const findUpdatedItem = (items, document) =>
-  items.toUpdate.find((item) => {
-    return item._id === document._id.toString();
-  });
+const findUpdatedItem = (items, document) => items.toUpdate.find((item) => item._id === document._id.toString());
 
 async function updateForm(req, res) {
   const form = await Form.findById(req.params.id).populate({
@@ -138,38 +125,7 @@ async function updateForm(req, res) {
   await createSections(separatedSections, form);
   await form.save();
   res.status(200).json(
-    form.sections.map(({ _id, title, description, questions }) => ({
-      _id,
-      title,
-      description,
-      questions: questions.map(
-        ({
-          _id,
-          description,
-          model,
-          other,
-          primaryKey,
-          title,
-          type,
-          options,
-          validations,
-        }) => ({
-          _id,
-          description,
-          model,
-          other,
-          primaryKey,
-          title,
-          type,
-          options: options.map(({ _id, text }) => ({ _id, text })),
-          validations: validations.map(({ _id, operator, expression }) => ({
-            _id,
-            operator,
-            expression,
-          })),
-        })
-      ),
-    }))
+    form.sections.map(transformData),
   );
 }
 
@@ -183,10 +139,10 @@ const updateSections = async (form, separatedSections) => {
       formSection.description = foundSection.description;
 
       const separatedQuestions = separateUpdateAndCreateItems(
-        foundSection.questions
+        foundSection.questions,
       );
       await updateQuestions(formSection, separatedQuestions);
-      await createQuestions(separatedQuestions, formSection);
+      await createQuestions(separatedQuestions.toCreate, formSection);
       await formSection.save();
     }
   }
@@ -199,6 +155,7 @@ const createSections = async (separatedSections, form) => {
       description: bodySection.description,
       form,
     });
+    await createQuestions(bodySection.questions, newSection);
     await newSection.save();
     form.sections = [...form.sections, newSection];
   }
@@ -218,16 +175,16 @@ const updateQuestions = async (formSection, separatedQuestions) => {
       formQuestion.type = foundQuestion.type;
 
       const separatedOptions = separateUpdateAndCreateItems(
-        foundQuestion.options
+        foundQuestion.options,
       );
       await updateOptions(formQuestion, separatedOptions);
-      await createOptions(separatedOptions, formQuestion);
+      await createOptions(separatedOptions.toCreate, formQuestion);
 
       const separatedValidations = separateUpdateAndCreateItems(
-        foundQuestion.validations
+        foundQuestion.validations,
       );
       await updateValidations(formQuestion, separatedValidations);
-      await createValidations(separatedValidations, formQuestion);
+      await createValidations(separatedValidations.toCreate, formQuestion);
       await formQuestion.save();
     }
   }
@@ -249,7 +206,7 @@ const updateValidations = async (formQuestion, separatedValidations) => {
   for (const formValidation of formQuestion.validations) {
     const foundValidation = findUpdatedItem(
       separatedValidations,
-      formValidation
+      formValidation,
     );
     if (!foundValidation) {
       await deleteValidationAndUpdateQuestion(formValidation._id, formQuestion);
@@ -261,8 +218,8 @@ const updateValidations = async (formQuestion, separatedValidations) => {
   }
 };
 
-const createQuestions = async (separatedQuestions, formSection) => {
-  for (const bodyQuestion of separatedQuestions.toCreate) {
+const createQuestions = async (questions, formSection) => {
+  for (const bodyQuestion of questions) {
     const newQuestion = new Question({
       description: bodyQuestion.description,
       model: bodyQuestion.model,
@@ -272,13 +229,15 @@ const createQuestions = async (separatedQuestions, formSection) => {
       type: bodyQuestion.type,
       section: formSection,
     });
+    await createOptions(bodyQuestion.options, newQuestion);
+    await createValidations(bodyQuestion.validations, newQuestion);
     await newQuestion.save();
     formSection.questions = [...formSection.questions, newQuestion];
   }
 };
 
-const createOptions = async (separatedOptions, formQuestion) => {
-  for (const bodyOption of separatedOptions.toCreate) {
+const createOptions = async (options, formQuestion) => {
+  for (const bodyOption of options) {
     const newOption = new Option({
       text: bodyOption.text,
       question: formQuestion,
@@ -288,8 +247,8 @@ const createOptions = async (separatedOptions, formQuestion) => {
   }
 };
 
-const createValidations = async (separatedValidations, formQuestion) => {
-  for (const bodyValidation of separatedValidations.toCreate) {
+const createValidations = async (validations, formQuestion) => {
+  for (const bodyValidation of validations) {
     const newValidation = new Validation({
       operator: bodyValidation.operator,
       expression: bodyValidation.expression,
@@ -300,7 +259,7 @@ const createValidations = async (separatedValidations, formQuestion) => {
   }
 };
 
-const deleteForm = async (req, res) => {};
+const deleteForm = async (req, res) => { };
 
 module.exports = {
   processForm,
