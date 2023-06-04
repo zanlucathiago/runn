@@ -17,7 +17,7 @@ const createQuestionModelFromData = (sectionModel) => (question) => {
   const options = question.options.map(createOptionFromText(questionModel));
   questionModel.options = options;
   const validations = question.validations.map(
-    createValidationFromExpression(questionModel)
+    createValidationFromExpression(questionModel),
   );
   questionModel.validations = validations;
   return questionModel;
@@ -28,15 +28,15 @@ function filterQuestionOptions(sections, queryParams) {
     for (const question of section.questions) {
       for (const validation of question.validations) {
         if (
-          validation.expression === 'DUPLICATE_FORM' &&
-          validation.operator === 'NOT_EXISTS'
+          validation.expression === 'DUPLICATE_FORM'
+          && validation.operator === 'NOT_EXISTS'
         ) {
           question.options = question.options.filter(
             isOptionAvailable(
               section.form.formResponses,
               question._id.toString(),
-              queryParams
-            )
+              queryParams,
+            ),
           );
         }
       }
@@ -44,13 +44,11 @@ function filterQuestionOptions(sections, queryParams) {
   }
 }
 
-const deleteQuestionWithOptionsAndValidations = (question) => {
-  return Promise.all([
-    Option.deleteMany({ _id: { $in: question.options } }),
-    Validation.deleteMany({ _id: { $in: question.validations } }),
-    Question.deleteOne({ _id: question._id }),
-  ]);
-};
+const deleteQuestionWithOptionsAndValidations = (question) => Promise.all([
+  Option.deleteMany({ _id: { $in: question.options } }),
+  Validation.deleteMany({ _id: { $in: question.validations } }),
+  Question.deleteOne({ _id: question._id }),
+]);
 
 module.exports = {
   createQuestionModelFromData,
