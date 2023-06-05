@@ -16,6 +16,7 @@ function ResponseInput({
   model,
   onChange,
   questionId,
+  validations,
   value,
 }) {
   const handleChange = (newValue) => {
@@ -27,6 +28,7 @@ function ResponseInput({
     <InputComponent
       onChange={handleChange}
       questionId={questionId}
+      validations={validations}
       value={value}
     >
       {children}

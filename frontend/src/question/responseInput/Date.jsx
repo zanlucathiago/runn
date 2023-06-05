@@ -8,9 +8,17 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import validationResource from '../../features/validationResource';
 
-function Date({ questionId, onChange, value }) {
+const createUrlParamsWithDate = (formattedDate) => {
+  const params = new URLSearchParams();
+  params.set('date', formattedDate);
+  return params;
+};
+
+function Date({
+  questionId, onChange, validations, value,
+}) {
   const [searchParams] = useSearchParams();
-  const [activeMonth, setActiveMonth] = useState();
+  const [activeMonth, setActiveMonth] = useState(moment(searchParams.get(`entry.${questionId}`) || undefined).format('YYYY-MM'));
   const [options, setOptions] = useState({});
   const onGetValidation = (key) => (data) => {
     setOptions({
@@ -20,16 +28,28 @@ function Date({ questionId, onChange, value }) {
       },
     });
   };
+  const setActiveMonthAndReturnFormattedDate = (date) => {
+    const formattedDate = date.format('YYYY-MM');
+    setActiveMonth(formattedDate);
+    return formattedDate;
+  };
+  const updateOptionsAndFetchValidation = (date, params) => {
+    setOptions({
+      ...options,
+      [date]: {},
+    });
+    validationResource.getValidationList(questionId, params)
+      .then(onGetValidation(date));
+  };
+  const handleFormattedDate = (date) => {
+    const params = createUrlParamsWithDate(date);
+    updateOptionsAndFetchValidation(date, params);
+  };
+  const isAvailableOptionsValidationExists = () => validations.some((validation) => validation.expression === 'AVAILABLE_OPTIONS'
+  && validation.operator === 'EXISTS');
   useEffect(() => {
-    if (questionId) {
-      const params = new URLSearchParams();
-      const formattedDate = moment(searchParams.get(`entry.${questionId}`)).format('YYYY-MM');
-      setActiveMonth(formattedDate);
-      params.set('date', formattedDate);
-      setOptions({
-        [formattedDate]: {},
-      });
-      validationResource.getValidationList(questionId, params).then(onGetValidation(formattedDate));
+    if (questionId && isAvailableOptionsValidationExists()) {
+      handleFormattedDate(activeMonth);
     }
   }, []);
   return (
@@ -37,17 +57,9 @@ function Date({ questionId, onChange, value }) {
       <DateCalendar
         loading={options[activeMonth] && !options[activeMonth].options}
         onMonthChange={(month) => {
-          const formattedMonth = month.format('YYYY-MM');
-          setActiveMonth(formattedMonth);
-          if (!options[formattedMonth] && questionId) {
-            const params = new URLSearchParams();
-            params.set('date', formattedMonth);
-            setOptions({
-              ...options,
-              [formattedMonth]: {},
-            });
-            validationResource.getValidationList(questionId, params)
-              .then(onGetValidation(formattedMonth));
+          const formattedMonth = setActiveMonthAndReturnFormattedDate(month);
+          if (!options[formattedMonth] && isAvailableOptionsValidationExists()) {
+            handleFormattedDate(formattedMonth);
           }
         }}
         shouldDisableDate={(date) => options[date.format('YYYY-MM')]?.options?.[date.format('DD')]}

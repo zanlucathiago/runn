@@ -158,18 +158,20 @@ function InputQuestion({
 InputQuestion.propTypes = {
   children: PropTypes.node,
   selected: PropTypes.bool,
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
   title: PropTypes.string,
   primaryKey: PropTypes.bool,
   model: PropTypes.string,
   description: PropTypes.string,
-  onClickDelete: PropTypes.func.isRequired,
+  onClickDelete: PropTypes.func,
   editable: PropTypes.bool,
   length: PropTypes.number,
 };
 
 InputQuestion.defaultProps = {
   children: null,
+  onChange: () => {},
+  onClickDelete: () => {},
   selected: false,
   title: null,
   primaryKey: false,
