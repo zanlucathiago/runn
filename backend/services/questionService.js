@@ -3,6 +3,7 @@ const Option = require('../models/optionModel');
 const Question = require('../models/questionModel');
 const { createOptionFromText, isOptionAvailable } = require('./optionService');
 const { createValidationFromExpression } = require('./validationService');
+const { isDuplicateFormNotExists } = require('./formService');
 
 const createQuestionModelFromData = (sectionModel) => (question) => {
   const questionModel = new Question({
@@ -28,8 +29,7 @@ function filterQuestionOptions(sections, queryParams) {
     for (const question of section.questions) {
       for (const validation of question.validations) {
         if (
-          validation.expression === 'DUPLICATE_FORM'
-          && validation.operator === 'NOT_EXISTS'
+          isDuplicateFormNotExists(validation)
         ) {
           question.options = question.options.filter(
             isOptionAvailable(

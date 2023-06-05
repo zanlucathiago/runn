@@ -7,12 +7,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import validationResource from '../../features/validationResource';
-
-const createUrlParamsWithDate = (formattedDate) => {
-  const params = new URLSearchParams();
-  params.set('date', formattedDate);
-  return params;
-};
+import formService from '../../services/formService';
 
 function Date({
   questionId, onChange, validations, value,
@@ -20,6 +15,13 @@ function Date({
   const [searchParams] = useSearchParams();
   const [activeMonth, setActiveMonth] = useState(moment(searchParams.get(`entry.${questionId}`) || undefined).format('YYYY-MM'));
   const [options, setOptions] = useState({});
+
+  const createUrlParamsWithDate = (formattedDate) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('date', formattedDate);
+    return params;
+  };
+
   const onGetValidation = (key) => (data) => {
     setOptions({
       ...options,
@@ -28,36 +30,46 @@ function Date({
       },
     });
   };
+
   const setActiveMonthAndReturnFormattedDate = (date) => {
     const formattedDate = date.format('YYYY-MM');
     setActiveMonth(formattedDate);
     return formattedDate;
   };
+
   const updateOptionsAndFetchValidation = (date, params) => {
     setOptions({
       ...options,
       [date]: {},
     });
+
     validationResource.getValidationList(questionId, params)
       .then(onGetValidation(date));
   };
+
   const handleFormattedDate = (date) => {
     const params = createUrlParamsWithDate(date);
     updateOptionsAndFetchValidation(date, params);
   };
-  const isAvailableOptionsValidationExists = () => validations.some((validation) => validation.expression === 'AVAILABLE_OPTIONS'
-  && validation.operator === 'EXISTS');
+
+  const isAvailableOptionsValidationExists = () => validations
+    .some((validation) => formService.hasFormValidationExpression(validation)
+      || (validation.expression === 'AVAILABLE_OPTIONS'
+  && validation.operator === 'EXISTS'));
+
   useEffect(() => {
     if (questionId && isAvailableOptionsValidationExists()) {
       handleFormattedDate(activeMonth);
     }
   }, []);
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="pt-br">
       <DateCalendar
         loading={options[activeMonth] && !options[activeMonth].options}
         onMonthChange={(month) => {
           const formattedMonth = setActiveMonthAndReturnFormattedDate(month);
+
           if (!options[formattedMonth] && isAvailableOptionsValidationExists()) {
             handleFormattedDate(formattedMonth);
           }
