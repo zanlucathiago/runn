@@ -3,7 +3,11 @@ function handleSectionQuestions(section, answers, queryParams) {
     const questionId = question._id;
     const questionAnswer = queryParams[`entry.${questionId}`];
     if (questionAnswer) {
-      answers[questionId] = {
+      answers[questionId] = question.options.length ? {
+        options: [questionAnswer],
+        text: null,
+      } : {
+        options: [],
         text: questionAnswer,
       };
     }

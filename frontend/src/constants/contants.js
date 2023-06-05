@@ -65,6 +65,10 @@ export const QUESTION_TYPE = {
 
 export const OPERATORS = [
   {
+    value: 'NOT_EQUAL',
+    text: 'Dia da semana não é',
+  },
+  {
     value: 'EXISTS',
     text: 'Existe/existem',
   },
@@ -75,6 +79,34 @@ export const OPERATORS = [
 ];
 
 export const EXPRESSIONS = [
+  {
+    value: 'SUNDAY',
+    text: 'Domingo',
+  },
+  {
+    value: 'MONDAY',
+    text: 'Segunda-feira',
+  },
+  {
+    value: 'TUESDAY',
+    text: 'Terça-feira',
+  },
+  {
+    value: 'WEDNESDAY',
+    text: 'Quarta-feira',
+  },
+  {
+    value: 'THURSDAY',
+    text: 'Quinta-feira',
+  },
+  {
+    value: 'FRIDAY',
+    text: 'Sexta-feira',
+  },
+  {
+    value: 'SATURDAY',
+    text: 'Sábado',
+  },
   {
     value: 'AVAILABLE_OPTIONS',
     text: 'Opções disponíveis (chave primária)',

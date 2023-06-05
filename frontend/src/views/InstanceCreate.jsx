@@ -21,6 +21,9 @@ const processQuestionAnswer = (queryParams, updatedAnswers) => (question) => {
   if (questionAnswer?.text) {
     queryParams[`entry.${questionId}`] = questionAnswer.text;
   }
+  questionAnswer?.options.forEach((option) => {
+    queryParams[`entry.${questionId}`] = option;
+  });
 };
 
 const processSectionQuestions = (...params) => (section) => section
@@ -90,10 +93,10 @@ export default function InstanceCreate() {
                 type={question.type}
               >
                 <ResponseInput
-                  questionId={question.validations.some((validation) => validation.expression === 'AVAILABLE_OPTIONS'
-                    && validation.operator === 'EXISTS') ? question._id : null}
+                  questionId={question._id}
                   model={question.model}
                   onChange={onChange(question)}
+                  validations={question.validations}
                   value={answers[question._id]}
                 >
                   {question.options.map((option) => (

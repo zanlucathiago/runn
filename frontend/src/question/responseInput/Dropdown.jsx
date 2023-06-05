@@ -7,7 +7,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 function Dropdown({ children, onChange, value }) {
-  const handleChange = (e) => onChange({ options: [e.target.value] });
+  const handleChange = (e) => {
+    onChange({ options: [e.target.value] });
+  };
   return (
     <FormControl size="small">
       <Select displayEmpty value={value.options[0] || ''} onChange={handleChange}>
