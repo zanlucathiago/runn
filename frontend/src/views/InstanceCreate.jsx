@@ -14,6 +14,7 @@ import Question from '../question/Question';
 import ResponseInput from '../question/ResponseInput';
 import ResponseInputOption from '../question/ResponseInputOption';
 import Section from '../section/Section';
+import formService from '../services/formService';
 
 const processQuestionAnswer = (queryParams, updatedAnswers) => (question) => {
   const questionId = question._id;
@@ -29,14 +30,9 @@ const processQuestionAnswer = (queryParams, updatedAnswers) => (question) => {
 const processSectionQuestions = (...params) => (section) => section
   .questions.forEach(processQuestionAnswer(...params));
 
-const hasFormValidationExpression = (validation) => (
-  validation.expression === 'DUPLICATE_FORM'
-  && validation.operator === 'NOT_EXISTS'
-);
-
 const hasFormValidationInQuestion = (_id) => (question) => (
   question._id !== _id
-  && question.validations.some(hasFormValidationExpression)
+  && question.validations.some(formService.hasFormValidationExpression)
 );
 
 const hasFormValidationInSection = (...params) => (section) => section
